@@ -5,7 +5,7 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
 
   plugins: [react()],
-  base: "/Jarred-Geller-ExploadingWidget/",
+  base: "/Jarred-Geller-Exploading-Widget-Unscrollable/",
 
 })
 
