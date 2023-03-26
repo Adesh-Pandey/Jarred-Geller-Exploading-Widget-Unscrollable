@@ -13,9 +13,9 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 
 function Columns() {
+    const [columnReverse, setcolumnReverse] = useState(true);
     const [colorList, setcolorList] = useState(["#D2ABFE", "#ED74B8", "#FF8B1A", "#3CA776", "#107FF0"])
     const Base = useSelector((state: RootState) => state.allState.base)
-    const [MouseDown, setMouseDown] = useState(false);
     const [Visibility, setVisibility] = useState(true)
     const containerDiv = useRef<HTMLDivElement>(null);
     const selectRef: any = useRef(null);
@@ -81,7 +81,7 @@ function Columns() {
                         <MenuItem value="12">1 <ArrowRightAltIcon className='reverse-arrow' />  12</MenuItem>
                     </Select>
                 </div>
-            </div></div>
+            </div></div><div className="column-order-reverse"> <button onClick={() => { setcolumnReverse(!columnReverse) }}> Column Order Reverse</button></div>
         <div className="results-and-boxes">
             <div className="parent-column-collection-container">
                 <button
@@ -89,11 +89,11 @@ function Columns() {
                         dispatch(addColumn())
                     }} className="add-column"><AddIcon className='icon-class' />
                 </button>
-                <div ref={containerDiv} className="column-collection-container">
+                <div ref={containerDiv} style={{ flexDirection: columnReverse ? "row-reverse" : "row" }} className="column-collection-container">
 
                     {Visibility &&
                         ColumnCollection.map((elem, idx) => {
-                            return <ColumnComponent borderColor={colorList[idx % colorList.length]} alterVisibility={alterVisibility} visibility={visibilityList[idx]} ShowTokenLabel={ShowTokenLabel} constrainsRef={containerDiv} order={idx} base={Base} key={idx}
+                            return <ColumnComponent columnReverse={columnReverse} borderColor={colorList[idx % colorList.length]} alterVisibility={alterVisibility} visibility={visibilityList[idx]} ShowTokenLabel={ShowTokenLabel} constrainsRef={containerDiv} order={idx} base={Base} key={idx}
 
                             />
                         })

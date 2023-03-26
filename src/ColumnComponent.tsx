@@ -6,10 +6,11 @@ import { motion } from "framer-motion"
 import PopAudio from './audios/addedPopSound.mp3'
 import RemoveIcon from '@mui/icons-material/Remove';
 
-function ColumnComponent({ borderColor, alterVisibility, visibility, ShowTokenLabel, constrainsRef, order, base }: { borderColor: String, alterVisibility: Function, visibility: boolean, ShowTokenLabel: boolean, constrainsRef: RefObject<HTMLDivElement>, order: number, base: number }) {
+function ColumnComponent({ columnReverse, borderColor, alterVisibility, visibility, ShowTokenLabel, constrainsRef, order, base }: { columnReverse: boolean, borderColor: String, alterVisibility: Function, visibility: boolean, ShowTokenLabel: boolean, constrainsRef: RefObject<HTMLDivElement>, order: number, base: number }) {
 
     const MouseDownSource = useSelector((state: RootState) => state.allState.mouseDownSource)
     const dispatch = useDispatch()
+    const ColumnCollection = useSelector((state: RootState) => state.allState.ColumnCollection.length)
     const InnerCircles = useSelector((state: RootState) => state.allState.InnerCirclesList[order])
     const audio = useRef<HTMLAudioElement>(null);
     const [stacking, setstacking] = useState(false)
@@ -112,6 +113,15 @@ function ColumnComponent({ borderColor, alterVisibility, visibility, ShowTokenLa
         let sendValue = ShowTokenLabel ? `x${count}` : "";
         return sendValue;
     }
+    const countAndPlus = () => {
+
+        if (columnReverse) {
+            return order == 0 ? "" : "+";
+        }
+        return order == ColumnCollection - 1 ? "" : "+";
+
+
+    }
     return (<motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.7 }}>
         <div className='column-individual' id={`${order}`}>
             <div className="count-tokens"
@@ -178,9 +188,7 @@ function ColumnComponent({ borderColor, alterVisibility, visibility, ShowTokenLa
 
                             setstacking(false);
                         }
-
                     }
-
                     onDragStart={
 
                         (e) => { initiateDragOnDiv(e); setstacking(true) }
@@ -212,8 +220,6 @@ function ColumnComponent({ borderColor, alterVisibility, visibility, ShowTokenLa
                             style={{ backgroundColor: `${borderColor}` }}
                             className="inner-circle">
                             {idx < 14 ? (ShowTokenLabel ? base ** order || 1 : "") : whatToDisplayInsidetoken(idx)}
-
-
                         </motion.div>
 
                     })}</motion.div>
@@ -225,7 +231,7 @@ function ColumnComponent({ borderColor, alterVisibility, visibility, ShowTokenLa
             <button onClick={resetCirclesInthisColumn}>0</button>
             <button className='end-button-right' onClick={removeInnerCircle}><RemoveIcon /></button></div>
 
-        <div className="net-value-column"><div style={{ color: `${borderColor}` }} className="axtual-total-value">{visibility ? (base ** order) * InnerCircles : "0"}</div> <div className="plus">{order == 0 ? "" : "+"}</div></div>
+        <div className="net-value-column"><div style={{ color: `${borderColor}` }} className="axtual-total-value">{visibility ? (base ** order) * InnerCircles : "0"}</div> <div className="plus">{countAndPlus()}</div></div>
     </motion.div >
 
     )
