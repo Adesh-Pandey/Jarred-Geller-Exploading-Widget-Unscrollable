@@ -18,7 +18,6 @@ function Columns() {
     const Base = useSelector((state: RootState) => state.allState.base)
     const [Visibility, setVisibility] = useState(true)
     const containerDiv = useRef<HTMLDivElement>(null);
-    const selectRef: any = useRef(null);
     const dispatch = useDispatch()
     const ColumnCollection = useSelector((state: RootState) => state.allState.ColumnCollection)
     const [selected, setselected] = useState("2")
@@ -53,6 +52,7 @@ function Columns() {
         setHighLightList([...Array(ColumnCollection.length)].map(x => false));
         setShowTokenLabel(true);
         setselected("2");
+        setcolumnReverse(true);
     }
 
     useEffect(() => {
