@@ -56,8 +56,20 @@ function Columns() {
     }
 
     useEffect(() => {
-        setvisibilityList([...Array(ColumnCollection.length)].map(x => true));
-        setHighLightList([...Array(ColumnCollection.length)].map(x => false));
+
+        if (visibilityList.length != 0) {
+            if (ColumnCollection.length > visibilityList.length) {
+                setvisibilityList([...visibilityList, true]);
+                setHighLightList([...HighLightList, false]);
+            } else if (ColumnCollection.length < visibilityList.length) {
+                let newList = visibilityList;
+                newList.pop();
+                setvisibilityList(newList);
+                let newHighLightList = [...HighLightList];
+                newHighLightList.pop()
+                setHighLightList(newHighLightList)
+            }
+        }
     }, [ColumnCollection])
 
     const setHighLight = (idx: number) => {
