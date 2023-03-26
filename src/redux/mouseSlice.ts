@@ -57,13 +57,13 @@ export const DotSlice = createSlice({
 
         ,
         removeColumn: (state) => {
-            if (state.ColumnCollection.length == 1) {
+            if (state.ColumnCollection.length <= 1) {
                 return;
             }
-            state.ColumnCollection.splice(state.ColumnCollection.length - 1, 1);
-            state.InnerCirclesList.splice(state.InnerCirclesList.length - 1, 1);
+            state.ColumnCollection.pop()
+            state.InnerCirclesList.pop();
 
-            state.TemporaryDiableList.splice(state.TemporaryDiableList.length - 1, 1);
+            state.TemporaryDiableList.pop()
         },
         changeBase: (state, action: PayloadAction<number>) => {
             state.base = action.payload

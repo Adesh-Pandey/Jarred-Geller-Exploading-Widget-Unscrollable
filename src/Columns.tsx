@@ -7,7 +7,7 @@ import AddIcon from '@mui/icons-material/Add';
 
 import RemoveIcon from '@mui/icons-material/Remove';
 
-import { addColumn, changeBase, clearAllStateInTheReduxState, mouseDownOnTheToken, mouseUpOnColumn, removeColumn } from './redux/mouseSlice'
+import { addColumn, changeBase, clearAllStateInTheReduxState, removeColumn } from './redux/mouseSlice'
 import type { RootState } from './redux/store'
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -47,8 +47,8 @@ function Columns() {
     }
 
     const ClearAllState = () => {
-        dispatch(clearAllStateInTheReduxState())
-        setvisibilityList([...Array(ColumnCollection.length)].map(x => true));
+        dispatch(clearAllStateInTheReduxState());
+        setvisibilityList([...[...Array(ColumnCollection.length)].map(x => true), true]);
         setHighLightList([...Array(ColumnCollection.length)].map(x => false));
         setShowTokenLabel(true);
         setselected("2");
@@ -62,7 +62,7 @@ function Columns() {
                 setvisibilityList([...visibilityList, true]);
                 setHighLightList([...HighLightList, false]);
             } else if (ColumnCollection.length < visibilityList.length) {
-                let newList = visibilityList;
+                let newList = [...visibilityList];
                 newList.pop();
                 setvisibilityList(newList);
                 let newHighLightList = [...HighLightList];
@@ -82,7 +82,7 @@ function Columns() {
         <div className='show-label-restart' style={{ fontFamily: "cursive" }}><div style={{ cursor: "default" }}>
             <input className='show-tokens' type="checkbox" checked={ShowTokenLabel} value={ShowTokenLabel ? 1 : 0} onChange={() => {
                 setShowTokenLabel(!ShowTokenLabel);
-            }} /> Show Token Label</div> <button onClick={() => { ClearAllState() }}>Restart</button></div>
+            }} /> Show Token Label</div> <button type="button" onClick={() => { ClearAllState() }}>Restart</button></div>
 
         <div className="choose-conversion">
             <div className="borderless-div">
@@ -103,10 +103,10 @@ function Columns() {
                         <MenuItem value="12">1 <ArrowRightAltIcon className='reverse-arrow' />  12</MenuItem>
                     </Select>
                 </div>
-            </div></div><div className="column-order-reverse"> <button onClick={() => { setcolumnReverse(!columnReverse) }}> Column Order Reverse</button></div>
+            </div></div><div className="column-order-reverse"> <button type="button" onClick={() => { setcolumnReverse(!columnReverse) }}> Column Order Reverse</button></div>
         <div className="results-and-boxes">
             <div className="parent-column-collection-container">
-                <button
+                <button type="button"
                     onClick={(e) => {
                         dispatch(addColumn())
                     }} className="add-column"><AddIcon className='icon-class' />
@@ -122,9 +122,9 @@ function Columns() {
                     }
 
                 </div>
-                <button
+                <button type="button"
                     onClick={(e) => {
-                        dispatch(removeColumn())
+                        ColumnCollection.length > 1 ? dispatch(removeColumn()) : "";
                     }} className="remove-column"><RemoveIcon className="icon-class" />
                 </button>
             </div>

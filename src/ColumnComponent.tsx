@@ -7,7 +7,29 @@ import PopAudio from './audios/addedPopSound.mp3'
 import RemoveIcon from '@mui/icons-material/Remove';
 import PushPinIcon from '@mui/icons-material/PushPin';
 
-function ColumnComponent({ HighLight, setHighLight, columnReverse, borderColor, alterVisibility, visibility, ShowTokenLabel, constrainsRef, order, base }: { HighLight: boolean, setHighLight: Function, columnReverse: boolean, borderColor: String, alterVisibility: Function, visibility: boolean, ShowTokenLabel: boolean, constrainsRef: RefObject<HTMLDivElement>, order: number, base: number }) {
+interface Props {
+    HighLight: boolean,
+    setHighLight: Function,
+    columnReverse: boolean,
+    borderColor: String,
+    alterVisibility: Function,
+    visibility: boolean,
+    ShowTokenLabel: boolean,
+    constrainsRef: RefObject<HTMLDivElement>,
+    order: number,
+    base: number
+}
+
+function ColumnComponent({ HighLight,
+    setHighLight,
+    columnReverse,
+    borderColor,
+    alterVisibility,
+    visibility,
+    ShowTokenLabel,
+    constrainsRef,
+    order,
+    base }: Props) {
     // const [HighLight, setHighLight] = useState(false);
     const MouseDownSource = useSelector((state: RootState) => state.allState.mouseDownSource)
     const dispatch = useDispatch()
@@ -145,7 +167,7 @@ function ColumnComponent({ HighLight, setHighLight, columnReverse, borderColor, 
                 </div>
                 <div style={{ marginTop: "4px" }}>
                     <label className="switch">
-                        <input checked={visibility}
+                        <input checked={visibility ? true : false}
                             onChange={() => {
                                 alterVisibility(order)
                                 dispatch(temporaryDisable(order));
