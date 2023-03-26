@@ -270,6 +270,7 @@ ul>li>svg{
 
 .count-tokens,.net-value-column{
   margin-left: 2px;
+  width:120px;
   display: flex;
   justify-content: space-around;
   margin-bottom: 10px;
@@ -280,6 +281,18 @@ ul>li>svg{
   flex-wrap: wrap;
   align-content: center;
 
+}
+
+.column-individual{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.count-tokens{
+  
+  margin-left:0;
 }
 
 .plus{

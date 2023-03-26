@@ -15,7 +15,7 @@ function ColumnComponent({ columnReverse, borderColor, alterVisibility, visibili
     const InnerCircles = useSelector((state: RootState) => state.allState.InnerCirclesList[order])
     const audio = useRef<HTMLAudioElement>(null);
     const [stacking, setstacking] = useState(false)
-    const [highLightOrWhite, sethighLightOrWhite] = useState("white");
+    const [highLightOrWhite, sethighLightOrWhite] = useState("#95959514");
 
     const TemporaryDisabledList = useSelector((state: RootState) => state.allState.TemporaryDiableList)
 
@@ -139,7 +139,7 @@ function ColumnComponent({ columnReverse, borderColor, alterVisibility, visibili
                 style={{ border: (base <= InnerCircles && visibility) ? "2px solid #ea0000" : `2px solid ${highLightOrWhite}` }}>
                 <div onClick={() => {
                     setHighLight(!HighLight);
-                    sethighLightOrWhite(HighLight ? "white" : HighLightStyle.backgroundColor)
+                    sethighLightOrWhite(HighLight ? "#95959514" : HighLightStyle.backgroundColor)
                 }}><PushPinIcon style={HighLight ? { color: "#4b4848e6" } : { color: "#aba8a8" }} /></div>
                 <div style={{ color: `${borderColor}` }} className='total-token-count'>{visibility ? InnerCircles : "0"}
                 </div>
