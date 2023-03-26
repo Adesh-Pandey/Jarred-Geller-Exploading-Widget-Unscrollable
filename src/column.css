@@ -62,7 +62,6 @@
 }
 
 
-
 .column-collection-container::-webkit-scrollbar-thumb {
   border-radius: 10px;
   /* -webkit-box-shadow: inset 0 0 4px rgba(0, 0, 0, .3); */
@@ -274,7 +273,8 @@ ul>li>svg{
 }
 
 .main-app-wrapper-container{
-  max-width:50%;
+  min-width:50%;
+  width:fit-content;
   margin:0 auto;
 }
 
