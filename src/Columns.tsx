@@ -107,9 +107,9 @@ function Columns() {
                 </button>
             </div>
         </div>
-        <div className="result">
-            ={" "} {totalValue()}
-        </div>
+
+        <div className="result"><div><div>{"= "} {totalValue()}</div> <div className="base-10-note">in Base 10</div></div></div>
+
     </div>
     )
 }
