@@ -35,6 +35,7 @@
   height: 240px;
   margin-top: 2rem;
   min-width:3.5rem;
+  cursor:pointer;
 }
 .add-column{
   margin-right:1rem;
@@ -111,6 +112,7 @@
     border-radius:5px;
     box-shadow: 2px 2px rgba(0,0,0,0.2);
     font-weight:800;
+    cursor:pointer;
 }
 input.show-tokens{
     height:18px;
@@ -197,9 +199,8 @@ input.show-tokens{
     /* position:absolute; */
     margin-bottom: -1.3rem;
     
-
+  cursor:grabbing;
 }
-
 #from{
   padding-bottom:0px;
   font-family:cursive;
@@ -232,6 +233,7 @@ input.show-tokens{
   width: fit-content;
 }
 .token-control>button{
+  cursor:pointer;
   padding: 2px 8px;
   background-color:#f0f0f0;
   font-weight: bold;
@@ -264,6 +266,7 @@ ul>li>svg{
   justify-content: space-around;
   flex-wrap: wrap;
   align-content: center;
+
 }
 
 .plus{
@@ -279,6 +282,7 @@ ul>li>svg{
 
 .total-token-count,.net-value-column{
   font-family:cursive;
+  cursor: default;
 }
 
 

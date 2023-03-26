@@ -137,7 +137,8 @@ function ColumnComponent({ borderColor, alterVisibility, visibility, ShowTokenLa
 
                 <motion.div
                     id={`${order}`}
-                    drag
+                    drag={InnerCircles == 0 ? false : true}
+                    onPointerDown={(e) => { e.preventDefault() }}
                     dragConstraints={constrainsRef}
                     dragElastic={0}
                     dragSnapToOrigin={true}

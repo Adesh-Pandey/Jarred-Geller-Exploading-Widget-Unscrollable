@@ -57,7 +57,7 @@ function Columns() {
 
 
     return (<div className='main-app-wrapper-container'>
-        <div className='show-label-restart' style={{ fontFamily: "cursive" }}><div>
+        <div className='show-label-restart' style={{ fontFamily: "cursive" }}><div style={{ cursor: "default" }}>
             <input className='show-tokens' type="checkbox" checked={ShowTokenLabel} value={ShowTokenLabel ? 1 : 0} onChange={() => {
                 setShowTokenLabel(!ShowTokenLabel);
             }} /> Show Token Label</div> <button onClick={() => { ClearAllState() }}>Restart</button></div>
@@ -108,7 +108,7 @@ function Columns() {
             </div>
         </div>
 
-        <div className="result"><div><div>{"= "} {totalValue()}</div> <div className="base-10-note">in Base 10</div></div></div>
+        <div className="result"><div style={{ cursor: "cell" }}><div>{"= "} {totalValue()}</div> <div className="base-10-note">in Base 10</div></div></div>
 
     </div>
     )
