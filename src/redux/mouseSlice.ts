@@ -62,6 +62,7 @@ export const DotSlice = createSlice({
             }
             state.ColumnCollection.splice(state.ColumnCollection.length - 1, 1);
             state.InnerCirclesList.splice(state.InnerCirclesList.length - 1, 1);
+            state.TemporaryDiableList.splice(state.InnerCirclesList.length - 1, 1);
         },
         changeBase: (state, action: PayloadAction<number>) => {
             state.base = action.payload
