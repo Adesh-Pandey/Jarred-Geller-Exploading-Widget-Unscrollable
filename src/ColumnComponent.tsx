@@ -33,7 +33,7 @@ function ColumnComponent({ columnReverse, borderColor, alterVisibility, visibili
 
     const [oldCOunt, setoldCOunt] = useState(InnerCircleList.length);
     useEffect(() => {
-        let Audi: any[] = [new Audio(PopAudio)]
+        let playPopAudio: any[] = [new Audio(PopAudio)]
         if (oldCOunt !== InnerCircles) {
             let change = oldCOunt - InnerCircles;
             if (change < 0) {
@@ -46,11 +46,11 @@ function ColumnComponent({ columnReverse, borderColor, alterVisibility, visibili
             for (let index = 0; index < change; index++) {
 
                 setTimeout(() => {
-                    Audi[index].play()
+                    playPopAudio[index].play()
                 }, index * 70);
 
 
-                Audi.push(new Audio(PopAudio));
+                playPopAudio.push(new Audio(PopAudio));
 
             }
 
@@ -110,7 +110,7 @@ function ColumnComponent({ columnReverse, borderColor, alterVisibility, visibili
         if (count == 1) {
             return ShowTokenLabel ? base ** order || 1 : "";
         }
-        let sendValue = ShowTokenLabel ? `x${count}` : "";
+        let sendValue = `x${count}`;
         return sendValue;
     }
     const countAndPlus = () => {
