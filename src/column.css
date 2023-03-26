@@ -1,16 +1,12 @@
 
 .column-collection-container{
-    /* height:600px; */
     display:flex;
     margin:0 auto;
-    /* justify-content:center; */
     width:80%;
-    /* flex-direction:row-reverse; */
     overflow-x:auto;
     flex-basis: content;
     
     scrollbar-width:none;
-    /* overflow-x:scroll; */
 }
 
 .parent-column-collection-container{
