@@ -1,12 +1,12 @@
-import { useState } from 'react'
-import './App.css'
 import Columns from './Columns'
 
+import { store } from './redux/store'
+import { Provider } from 'react-redux'
+
 function App() {
-  const [count, setCount] = useState(0)
 
-
-  return <Columns />
+  return <Provider store={store}>
+    <Columns /></Provider>
 }
 
 export default App;
