@@ -265,7 +265,7 @@ input.show-tokens{
 }
 ul>li>svg{
   position: relative;
-    top: -4px;
+  top: -4px;
 }
 
 .count-tokens,.net-value-column{

@@ -27,6 +27,9 @@ function Columns() {
 
     const [visibilityList, setvisibilityList] = useState([...Array(ColumnCollection.length)].map(x => true))
 
+
+    const [HighLightList, setHighLightList] = useState([...Array(ColumnCollection.length)].map(x => false));
+
     const handleSelectChange = (event: any) => {
         dispatch(changeBase(Number(event.target.value))); setselected(event.target.value);
     }
@@ -47,14 +50,21 @@ function Columns() {
     const ClearAllState = () => {
         dispatch(clearAllStateInTheReduxState())
         setvisibilityList([...Array(ColumnCollection.length)].map(x => true));
+        setHighLightList([...Array(ColumnCollection.length)].map(x => false));
         setShowTokenLabel(true);
         setselected("2");
     }
 
     useEffect(() => {
         setvisibilityList([...Array(ColumnCollection.length)].map(x => true));
+        setHighLightList([...Array(ColumnCollection.length)].map(x => false));
     }, [ColumnCollection])
 
+    const setHighLight = (idx: number) => {
+        let newHighLight = [...HighLightList];
+        newHighLight[idx] = !newHighLight[idx];
+        setHighLightList(newHighLight)
+    }
 
     return (<div className='main-app-wrapper-container'>
         <div className='show-label-restart' style={{ fontFamily: "cursive" }}><div style={{ cursor: "default" }}>
@@ -93,7 +103,7 @@ function Columns() {
 
                     {Visibility &&
                         ColumnCollection.map((elem, idx) => {
-                            return <ColumnComponent columnReverse={columnReverse} borderColor={colorList[idx % colorList.length]} alterVisibility={alterVisibility} visibility={visibilityList[idx]} ShowTokenLabel={ShowTokenLabel} constrainsRef={containerDiv} order={idx} base={Base} key={idx}
+                            return <ColumnComponent HighLight={HighLightList[idx]} setHighLight={setHighLight} columnReverse={columnReverse} borderColor={colorList[idx % colorList.length]} alterVisibility={alterVisibility} visibility={visibilityList[idx]} ShowTokenLabel={ShowTokenLabel} constrainsRef={containerDiv} order={idx} base={Base} key={idx}
 
                             />
                         })

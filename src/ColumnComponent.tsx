@@ -7,8 +7,8 @@ import PopAudio from './audios/addedPopSound.mp3'
 import RemoveIcon from '@mui/icons-material/Remove';
 import PushPinIcon from '@mui/icons-material/PushPin';
 
-function ColumnComponent({ columnReverse, borderColor, alterVisibility, visibility, ShowTokenLabel, constrainsRef, order, base }: { columnReverse: boolean, borderColor: String, alterVisibility: Function, visibility: boolean, ShowTokenLabel: boolean, constrainsRef: RefObject<HTMLDivElement>, order: number, base: number }) {
-    const [HighLight, setHighLight] = useState(false);
+function ColumnComponent({ HighLight, setHighLight, columnReverse, borderColor, alterVisibility, visibility, ShowTokenLabel, constrainsRef, order, base }: { HighLight: boolean, setHighLight: Function, columnReverse: boolean, borderColor: String, alterVisibility: Function, visibility: boolean, ShowTokenLabel: boolean, constrainsRef: RefObject<HTMLDivElement>, order: number, base: number }) {
+    // const [HighLight, setHighLight] = useState(false);
     const MouseDownSource = useSelector((state: RootState) => state.allState.mouseDownSource)
     const dispatch = useDispatch()
     const ColumnCollection = useSelector((state: RootState) => state.allState.ColumnCollection.length)
@@ -138,7 +138,7 @@ function ColumnComponent({ columnReverse, borderColor, alterVisibility, visibili
             <div className="count-tokens"
                 style={{ border: (base <= InnerCircles && visibility) ? "2px solid #ea0000" : `2px solid ${highLightOrWhite}` }}>
                 <div onClick={() => {
-                    setHighLight(!HighLight);
+                    setHighLight(order);
                     sethighLightOrWhite(HighLight ? "#95959514" : HighLightStyle.backgroundColor)
                 }}><PushPinIcon style={HighLight ? { color: "#4b4848e6" } : { color: "#aba8a8" }} /></div>
                 <div style={{ color: `${borderColor}` }} className='total-token-count'>{visibility ? InnerCircles : "0"}
