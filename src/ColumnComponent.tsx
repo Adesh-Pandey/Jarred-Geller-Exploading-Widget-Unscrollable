@@ -5,15 +5,17 @@ import { mouseDownOnTheToken, mouseUpOnColumn, addTokenInColumn, removeTokenInCo
 import { motion } from "framer-motion"
 import PopAudio from './audios/addedPopSound.mp3'
 import RemoveIcon from '@mui/icons-material/Remove';
+import PushPinIcon from '@mui/icons-material/PushPin';
 
 function ColumnComponent({ columnReverse, borderColor, alterVisibility, visibility, ShowTokenLabel, constrainsRef, order, base }: { columnReverse: boolean, borderColor: String, alterVisibility: Function, visibility: boolean, ShowTokenLabel: boolean, constrainsRef: RefObject<HTMLDivElement>, order: number, base: number }) {
-
+    const [HighLight, setHighLight] = useState(false);
     const MouseDownSource = useSelector((state: RootState) => state.allState.mouseDownSource)
     const dispatch = useDispatch()
     const ColumnCollection = useSelector((state: RootState) => state.allState.ColumnCollection.length)
     const InnerCircles = useSelector((state: RootState) => state.allState.InnerCirclesList[order])
     const audio = useRef<HTMLAudioElement>(null);
     const [stacking, setstacking] = useState(false)
+    const [highLightOrWhite, sethighLightOrWhite] = useState("white");
 
     const TemporaryDisabledList = useSelector((state: RootState) => state.allState.TemporaryDiableList)
 
@@ -122,11 +124,23 @@ function ColumnComponent({ columnReverse, borderColor, alterVisibility, visibili
 
 
     }
-    return (<motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.7 }}>
-        <div className='column-individual' id={`${order}`}>
-            <div className="count-tokens"
-                style={{ border: (base <= InnerCircles && visibility) ? "2px solid #ea0000" : "2px solid white" }}>
 
+    const HighLightStyle = {
+        outlineColor: "#201c1c",
+        boxShadow: "9px 6px 14px -8px rgb(144, 135, 135)",
+        outlineWidth: "13px",
+        backgroundColor: "rgb(251 251 198 / 35%)",
+        borderRadius: "6px",
+    }
+
+    return (<motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.7 }}>
+        <div className='column-individual' style={HighLight ? HighLightStyle : {}} id={`${order}`}>
+            <div className="count-tokens"
+                style={{ border: (base <= InnerCircles && visibility) ? "2px solid #ea0000" : `2px solid ${highLightOrWhite}` }}>
+                <div onClick={() => {
+                    setHighLight(!HighLight);
+                    sethighLightOrWhite(HighLight ? "white" : HighLightStyle.backgroundColor)
+                }}><PushPinIcon style={HighLight ? { color: "#4b4848e6" } : { color: "#aba8a8" }} /></div>
                 <div style={{ color: `${borderColor}` }} className='total-token-count'>{visibility ? InnerCircles : "0"}
                 </div>
                 <div style={{ marginTop: "4px" }}>
@@ -142,7 +156,7 @@ function ColumnComponent({ columnReverse, borderColor, alterVisibility, visibili
                 outlineColor: "#ea0000",
                 outlineStyle: "auto",
                 outlineOffset: "2px",
-                border: `3px solid ${borderColor}`
+                border: `3px solid #95959514`
             } : { border: `3px solid ${borderColor}` }} variants={variant} animate={visibility ? "open" : "closed"} id={`${order}`} className='column-individual-inner-circle-collection'>
 
                 <motion.div
