@@ -186,7 +186,7 @@ function ColumnComponent({ stacking, _setstacking, HighLight,
                     if (TemporaryDisabledList[Number(elementsHere[i]?.id)] == -1 || TemporaryDisabledList[order] == -1) {
                         // dispatch(mouseUpOnColumn(MouseDownSource))
                         if (Number(elementsHere[i].id) > order) {
-                            settokensWhileHover((2 ** (Number(elementsHere[i].id) - order)));
+                            settokensWhileHover((base ** (Number(elementsHere[i].id) - order)));
 
                         } else if (order == Number(elementsHere[i].id)) {
                             settokensWhileHover(15);
@@ -208,7 +208,7 @@ function ColumnComponent({ stacking, _setstacking, HighLight,
 
                     if (idOftheFinalColumn >= 0) {
                         if (idOftheFinalColumn > order) {
-                            settokensWhileHover((2 ** (idOftheFinalColumn - order)));
+                            settokensWhileHover((base ** (idOftheFinalColumn - order)));
 
                         } else if (order == idOftheFinalColumn) {
                             settokensWhileHover(15);
