@@ -4,6 +4,7 @@ import { RootState } from './redux/store'
 import { mouseDownOnTheToken, mouseUpOnColumn, addTokenInColumn, removeTokenInColumn, resetCircles, temporaryDisable } from './redux/mouseSlice'
 import { motion } from "framer-motion"
 import PopAudio from './audios/addedPopSound.mp3'
+import ErrorAudio from "./audios/Error-sound-effect.mp3"
 import RemoveIcon from '@mui/icons-material/Remove';
 import PushPinIcon from '@mui/icons-material/PushPin';
 
@@ -44,10 +45,13 @@ function ColumnComponent({ stacking, _setstacking, HighLight,
 
     const TemporaryDisabledList = useSelector((state: RootState) => state.allState.TemporaryDiableList)
 
-    const [tokensWhileHover, settokensWhileHover] = useState(0)
+    const [tokensWhileHover, settokensWhileHover] = useState(-1)
     const [InnerCircleList, setInnerCircleList] = useState([...Array(InnerCircles > 15 ? 15 : InnerCircles)])
     const [Shakeable, setShakeable] = useState(false);
+    const [InnerCircleListDummyDiv, setInnerCircleListDummyDiv] = useState([...Array(InnerCircles > 15 ? 15 : InnerCircles)])
 
+    const errorColor = "red";
+    const [notEnoughTokens, setnotEnoughTokens] = useState(false);
 
     const addInnerCircle = () => {
         audio?.current?.play();
@@ -89,9 +93,10 @@ function ColumnComponent({ stacking, _setstacking, HighLight,
         setTimeout(() => {
             setShakeable((base <= InnerCircles));
             setInnerCircleList([...Array(InnerCircles > 15 ? 15 : InnerCircles)])
+            setInnerCircleListDummyDiv([...Array(InnerCircles > 15 ? 15 : InnerCircles)])
         }, 70);
 
-    }, [InnerCircles,])
+    }, [InnerCircles])
     const initiateDragOnDiv = (e: any) => {
         e.preventDefault()
         // console.log(e)
@@ -139,19 +144,35 @@ function ColumnComponent({ stacking, _setstacking, HighLight,
         }
         let sendValue;
         if (stacking) {
-            // console.log(tokensWhileHover)
-            if (tokensWhileHover == 0) { return `x${count}` }
-            if (count - tokensWhileHover < 0) {
-                return `x${count}`;
-            }
-            // if(count-tokensWhileHover==0)
-            return `x${tokensWhileHover - 14}`
-            // return `x${base ** order}`
+            return ShowTokenLabel ? base ** order || 1 : ""
         } else {
             sendValue = `x${count}`;
         }
         return sendValue;
     }
+
+    const whatToDisplayInsideDummyDivToken = (idx: number) => {
+        if (idx != InnerCircleList.length - 1 || InnerCircles - InnerCircleList.length == 0) {
+            return ShowTokenLabel ? base ** order || 1 : ""
+        }
+
+        let count = InnerCircles - InnerCircleListDummyDiv.length + 1;
+
+        if (count == tokensWhileHover + 1) {
+            return ShowTokenLabel ? base ** order || 1 : ""
+        }
+
+        if (tokensWhileHover - count < 0) {
+            count = count - tokensWhileHover;
+        }
+        else if (tokensWhileHover > count) {
+            return ShowTokenLabel ? base ** order || 1 : "";
+        }
+
+        return `x${count}`;
+    }
+
+
     const countAndPlus = () => {
 
         if (columnReverse) {
@@ -237,12 +258,78 @@ function ColumnComponent({ stacking, _setstacking, HighLight,
         }
     }
 
+    const getCurrentHoverColumn = () => {
+        let callChanges = -1;
+        const elementsHere = document.elementsFromPoint(XandYCoordinates.x, XandYCoordinates.y);
+        for (let i = 0; i < elementsHere.length; i++) {
+            if (elementsHere[i].classList.contains("column-individual-inner-circle-collection")) {
+                if (TemporaryDisabledList[Number(elementsHere[i]?.id)] == -1 || TemporaryDisabledList[order] == -1) {
+                    // dispatch(mouseUpOnColumn(MouseDownSource))
+                    return Number(elementsHere[i].id);
+                    break;
+                }
+                callChanges = i;
+                break;
+                // console.log(document.elementsFromPoint(info.point.x, info.point.y)[i])
+            }
+        }
+        if (callChanges != -1) {
+            if (elementsHere[callChanges].id) {
+                let or = Number(elementsHere[callChanges].id)
+
+                if (or >= 0)
+                    // dispatch(mouseUpOnColumn(or))
+                    return or
+            }
+        }
+    }
+    useEffect(() => {
+        // setInnerCircleListDummyDiv(InnerCircleList)
+        if (tokensWhileHover != -1 && notEnoughTokens) {
+            setnotEnoughTokens(false);
+        }
+        if (tokensWhileHover != 0 && tokensWhileHover != -1) {
+
+            let newList = [...InnerCircleList]
+            let count = InnerCircles - InnerCircleList.length;
+            if (tokensWhileHover > InnerCircles && getCurrentHoverColumn()) {
+                let playErrorAudio: any[] = [new Audio(ErrorAudio)]
+                playErrorAudio[0].play()
+                setnotEnoughTokens(true);
+            } else
+                // setInnerCircleListDummyDiv([...Array(InnerCircles > 15 ? 15 : InnerCircles)])            
+                if (count == 0) {
+                    for (let index = 0; index < tokensWhileHover; index++) {
+                        newList.pop()
+                    }
+                    setInnerCircleListDummyDiv(newList)
+                    setnotEnoughTokens(false)
+                } else {
+                    if (tokensWhileHover - count > 0) {
+                        for (let index = 0; index < tokensWhileHover - count; index++) {
+                            newList.pop()
+                        }
+                        setInnerCircleListDummyDiv(newList)
+                        // setnotEnoughTokens(false)
+                    }
+                    setnotEnoughTokens(false)
+                }
+
+
+        }
+
+    }, [tokensWhileHover])
+
+
+
+
+
     const moveableComp = useRef<HTMLDivElement>(null);
 
     return (<motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.7 }}>
         <div className='column-individual' style={HighLight ? HighLightStyle : {}} id={`${order}`}>
             <div className="count-tokens"
-                style={{ border: (base <= InnerCircles && visibility) ? "2px solid #ea0000" : `2px solid ${highLightOrWhite}` }}>
+                style={{ border: (base <= InnerCircles && visibility) ? "2px solid #ea0000" : `2px solid ${highLightOrWhite}`, backgroundColor: notEnoughTokens ? errorColor : "whitesmoke" }}>
                 <div onClick={() => {
                     setHighLight(order);
                     sethighLightOrWhite(HighLight ? "#95959514" : HighLightStyle.backgroundColor)
@@ -262,9 +349,41 @@ function ColumnComponent({ stacking, _setstacking, HighLight,
                 outlineColor: "#ea0000",
                 outlineStyle: "auto",
                 outlineOffset: "2px",
-                border: `3px solid #95959514`
-            } : { border: `3px solid ${borderColor}` }} variants={variant} animate={visibility ? "open" : "closed"} id={`${order}`} className='column-individual-inner-circle-collection'>
+                border: `3px solid #95959514`,
+                backgroundColor: notEnoughTokens ? errorColor : "whitesmoke"
+            } : { backgroundColor: notEnoughTokens ? errorColor : "whitesmoke", border: `3px solid ${borderColor}` }} variants={variant} animate={visibility ? "open" : "closed"} id={`${order}`} className='column-individual-inner-circle-collection'>
+                {tokensWhileHover == -1 || tokensWhileHover == 0 ? "" : <motion.div
+                    id={`${order}`}
 
+                    className='column-individual-inner-circle-collection-inner-div'>
+
+                    {/* {base ** order || 1} */}
+                    {InnerCircleListDummyDiv.map((count, idx) => {
+
+                        return <motion.div
+
+                            animate={"normal"}
+                            variants={{
+                                stack: {
+                                    scale: Shakeable && (base <= InnerCircles) ? [0.7, 2, 1] : [0, 1],
+                                    position: "relative", top: `${getPxFromTop(idx)}px`, left: `${((idx % 3) * -35 + extraRight(idx))}px`,
+                                    zIndex: idx,
+                                    display: idx > 17 ? "none" : "flex",
+                                },
+                                normal: { scale: Shakeable && (base <= InnerCircles) ? [0.7, 2, 1] : [0, 1], }
+                                , noneDisplay: { opacity: "0" }
+                            }}
+                            transition={{
+                                type: 'spring', bounce: "0.5"
+                                , repeat: base <= InnerCircles && !stacking ? Infinity : 0, duration: 1
+                            }}
+                            key={idx}
+                            style={{ backgroundColor: `${borderColor}` }}
+                            className="inner-circle">
+                            {idx < 14 ? (ShowTokenLabel ? base ** order || 1 : "") : whatToDisplayInsideDummyDivToken(idx)}
+                        </motion.div>
+
+                    })}</motion.div>}
                 <motion.div
                     id={`${order}`}
                     drag={InnerCircles == 0 ? false : true}
@@ -307,8 +426,11 @@ function ColumnComponent({ stacking, _setstacking, HighLight,
                             }
 
                             setInnerCircleList([...Array(InnerCircles > 15 ? 15 : InnerCircles)])
+                            setInnerCircleListDummyDiv([...Array(InnerCircles > 15 ? 15 : InnerCircles)])
 
                             setstacking(false);
+                            settokensWhileHover(-1);
+                            setnotEnoughTokens(false);
                         }
                     }
                     onDragStart={
