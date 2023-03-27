@@ -143,8 +143,6 @@ function ColumnComponent({ HighLight,
             return order == 0 ? "" : "+";
         }
         return order == ColumnCollection - 1 ? "" : "+";
-
-
     }
 
     const HighLightStyle = {
@@ -174,7 +172,7 @@ function ColumnComponent({ HighLight,
                             }} type="checkbox" />
                         <span className="slider round"></span>
                     </label></div></div>
-            <motion.div style={base <= InnerCircles ? {
+            <motion.div onPointerDown={() => { window.addEventListener("mousemove", () => { console.log("moving") }) }} style={base <= InnerCircles ? {
                 outlineColor: "#ea0000",
                 outlineStyle: "auto",
                 outlineOffset: "2px",
@@ -188,7 +186,7 @@ function ColumnComponent({ HighLight,
                     dragConstraints={constrainsRef}
                     dragElastic={0}
                     dragSnapToOrigin={true}
-                    whileDrag={{ position: "absolute" }}
+                    whileDrag={{ position: "absolute", height: "110px" }}
                     dragPropagation
                     style={{
                         //  "backgroundColor": "black", 
@@ -227,7 +225,11 @@ function ColumnComponent({ HighLight,
                     }
                     onDragStart={
 
-                        (e) => { initiateDragOnDiv(e); setstacking(true) }
+                        (e, info) => {
+                            initiateDragOnDiv(e);
+                            setstacking(true)
+
+                        }
                     }
 
                     className='column-individual-inner-circle-collection-inner-div'>
@@ -252,6 +254,7 @@ function ColumnComponent({ HighLight,
                                 type: 'spring', bounce: "0.5"
                                 , repeat: base <= InnerCircles && !stacking ? Infinity : 0, duration: 1
                             }}
+                            whileDrag={{ display: "none" }}
                             key={idx}
                             style={{ backgroundColor: `${borderColor}` }}
                             className="inner-circle">

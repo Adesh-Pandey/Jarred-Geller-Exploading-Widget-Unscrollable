@@ -108,7 +108,8 @@ function Columns() {
             <div className="parent-column-collection-container">
                 <button type="button"
                     onClick={(e) => {
-                        dispatch(addColumn())
+                        if (ColumnCollection.length < 6)
+                            dispatch(addColumn())
                     }} className="add-column"><AddIcon className='icon-class' />
                 </button>
                 <div ref={containerDiv} style={{ flexDirection: columnReverse ? "row-reverse" : "row" }} className="column-collection-container">
@@ -124,7 +125,7 @@ function Columns() {
                 </div>
                 <button type="button"
                     onClick={(e) => {
-                        ColumnCollection.length > 1 ? dispatch(removeColumn()) : "";
+                        ColumnCollection.length > 2 ? dispatch(removeColumn()) : "";
                     }} className="remove-column"><RemoveIcon className="icon-class" />
                 </button>
             </div>
