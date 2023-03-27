@@ -13,6 +13,7 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 
 function Columns() {
+
     const [columnReverse, setcolumnReverse] = useState(true);
     const [colorList, setcolorList] = useState(["#D2ABFE", "#ED74B8", "#FF8B1A", "#3CA776", "#107FF0"])
     const Base = useSelector((state: RootState) => state.allState.base)
@@ -26,7 +27,7 @@ function Columns() {
 
     const [visibilityList, setvisibilityList] = useState([...Array(ColumnCollection.length)].map(x => true))
 
-
+    const [stacking, setstacking] = useState([...Array(ColumnCollection.length).map(x => false)]);
     const [HighLightList, setHighLightList] = useState([...Array(ColumnCollection.length)].map(x => false));
 
     const handleSelectChange = (event: any) => {
@@ -50,6 +51,7 @@ function Columns() {
         dispatch(clearAllStateInTheReduxState());
         setvisibilityList([...[...Array(ColumnCollection.length)].map(x => true), true]);
         setHighLightList([...Array(ColumnCollection.length)].map(x => false));
+        setstacking([...Array(ColumnCollection.length)].map(x => false));
         setShowTokenLabel(true);
         setselected("2");
         setcolumnReverse(true);
@@ -61,13 +63,18 @@ function Columns() {
             if (ColumnCollection.length > visibilityList.length) {
                 setvisibilityList([...visibilityList, true]);
                 setHighLightList([...HighLightList, false]);
+                setstacking([...stacking, false]);
             } else if (ColumnCollection.length < visibilityList.length) {
-                let newList = [...visibilityList];
-                newList.pop();
-                setvisibilityList(newList);
+                let newList = [[...visibilityList], [...stacking]];
+                newList[0].pop();
+                setvisibilityList(newList[0]);
+                newList[1].pop()
+                setstacking(newList[1])
                 let newHighLightList = [...HighLightList];
                 newHighLightList.pop()
                 setHighLightList(newHighLightList)
+
+
             }
         }
     }, [ColumnCollection])
@@ -76,6 +83,11 @@ function Columns() {
         let newHighLight = [...HighLightList];
         newHighLight[idx] = !newHighLight[idx];
         setHighLightList(newHighLight)
+    }
+    const setStackingData = (data: boolean, idx: number) => {
+        let newStackList = [...stacking];
+        newStackList[idx] = !newStackList[idx];
+        setstacking(newStackList)
     }
 
     return (<div className='main-app-wrapper-container'>
@@ -116,7 +128,7 @@ function Columns() {
 
                     {Visibility &&
                         ColumnCollection.map((elem, idx) => {
-                            return <ColumnComponent HighLight={HighLightList[idx]} setHighLight={setHighLight} columnReverse={columnReverse} borderColor={colorList[idx % colorList.length]} alterVisibility={alterVisibility} visibility={visibilityList[idx]} ShowTokenLabel={ShowTokenLabel} constrainsRef={containerDiv} order={idx} base={Base} key={idx}
+                            return <ColumnComponent stacking={stacking[idx]} _setstacking={setStackingData} HighLight={HighLightList[idx]} setHighLight={setHighLight} columnReverse={columnReverse} borderColor={colorList[idx % colorList.length]} alterVisibility={alterVisibility} visibility={visibilityList[idx]} ShowTokenLabel={ShowTokenLabel} constrainsRef={containerDiv} order={idx} base={Base} key={idx}
 
                             />
                         })

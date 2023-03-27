@@ -8,6 +8,8 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import PushPinIcon from '@mui/icons-material/PushPin';
 
 interface Props {
+    stacking: boolean,
+    _setstacking: Function,
     HighLight: boolean,
     setHighLight: Function,
     columnReverse: boolean,
@@ -20,7 +22,7 @@ interface Props {
     base: number
 }
 
-function ColumnComponent({ HighLight,
+function ColumnComponent({ stacking, _setstacking, HighLight,
     setHighLight,
     columnReverse,
     borderColor,
@@ -32,16 +34,17 @@ function ColumnComponent({ HighLight,
     base }: Props) {
     // const [HighLight, setHighLight] = useState(false);
     const MouseDownSource = useSelector((state: RootState) => state.allState.mouseDownSource)
+    const [XandYCoordinates, setXandYCoordinates] = useState({ x: 0, y: 0 })
     const dispatch = useDispatch()
     const ColumnCollection = useSelector((state: RootState) => state.allState.ColumnCollection.length)
     const InnerCircles = useSelector((state: RootState) => state.allState.InnerCirclesList[order])
     const audio = useRef<HTMLAudioElement>(null);
-    const [stacking, setstacking] = useState(false)
+    // const [stacking, _setstacking] = useState(false)
     const [highLightOrWhite, sethighLightOrWhite] = useState("#95959514");
 
     const TemporaryDisabledList = useSelector((state: RootState) => state.allState.TemporaryDiableList)
 
-
+    const [tokensWhileHover, settokensWhileHover] = useState(0)
     const [InnerCircleList, setInnerCircleList] = useState([...Array(InnerCircles > 15 ? 15 : InnerCircles)])
     const [Shakeable, setShakeable] = useState(false);
 
@@ -153,6 +156,76 @@ function ColumnComponent({ HighLight,
         borderRadius: "6px",
     }
 
+
+    const animationType = (idx: number) => {
+        if (stacking) {
+            if (idx < tokensWhileHover) {
+                return "stack";
+            }
+            return "noneDisplay"
+        }
+        return "normal";
+    }
+    const stackingRef = useRef(stacking);
+
+    const setstacking = (data: boolean) => {
+        // console.log(data)
+        stackingRef.current = data;
+        _setstacking(data, order);
+    }
+
+    const onMouseMoveWhileDragging = (e: any) => {
+        if (stackingRef.current) {
+            setXandYCoordinates({ x: e.clientX, y: e.clientY })
+            // console.log(e.clientX)s
+            // console.log(XandYCoordinates)
+            let callChanges = -1;
+            const elementsHere = document.elementsFromPoint(XandYCoordinates.x, XandYCoordinates.y);
+            for (let i = 0; i < elementsHere.length; i++) {
+                if (elementsHere[i].classList.contains("column-individual-inner-circle-collection")) {
+                    if (TemporaryDisabledList[Number(elementsHere[i]?.id)] == -1 || TemporaryDisabledList[order] == -1) {
+                        // dispatch(mouseUpOnColumn(MouseDownSource))
+                        if (Number(elementsHere[i].id) > order) {
+                            settokensWhileHover((2 ** (Number(elementsHere[i].id) - order)));
+
+                        } else if (order == Number(elementsHere[i].id)) {
+                            settokensWhileHover(15);
+
+                        } else {
+                            settokensWhileHover(1);
+                        }
+                        // console.log(tokensWhileHover)
+                        break;
+                    }
+                    callChanges = i;
+                    break;
+                    // console.log(document.elementsFromPoint(info.point.x, info.point.y)[i])
+                }
+            }
+            if (callChanges != -1) {
+                if (elementsHere[callChanges].id) {
+                    let idOftheFinalColumn = Number(elementsHere[callChanges].id)
+
+                    if (idOftheFinalColumn >= 0) {
+                        if (idOftheFinalColumn > order) {
+                            settokensWhileHover((2 ** (idOftheFinalColumn - order)));
+
+                        } else if (order == idOftheFinalColumn) {
+                            settokensWhileHover(15);
+                        } else {
+                            settokensWhileHover(1);
+                        }
+                        // console.log(tokensWhileHover)
+
+                    }
+                }
+            }
+
+        }
+    }
+
+    const moveableComp = useRef<HTMLDivElement>(null);
+
     return (<motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.7 }}>
         <div className='column-individual' style={HighLight ? HighLightStyle : {}} id={`${order}`}>
             <div className="count-tokens"
@@ -172,7 +245,7 @@ function ColumnComponent({ HighLight,
                             }} type="checkbox" />
                         <span className="slider round"></span>
                     </label></div></div>
-            <motion.div onPointerDown={() => { window.addEventListener("mousemove", () => { console.log("moving") }) }} style={base <= InnerCircles ? {
+            <motion.div style={base <= InnerCircles ? {
                 outlineColor: "#ea0000",
                 outlineStyle: "auto",
                 outlineOffset: "2px",
@@ -182,7 +255,11 @@ function ColumnComponent({ HighLight,
                 <motion.div
                     id={`${order}`}
                     drag={InnerCircles == 0 ? false : true}
-                    onPointerDown={(e) => { e.preventDefault() }}
+                    onMouseMove={onMouseMoveWhileDragging}
+                    onMouseDown={(e) => {
+                        e.preventDefault();
+                    }}
+                    ref={moveableComp}
                     dragConstraints={constrainsRef}
                     dragElastic={0}
                     dragSnapToOrigin={true}
@@ -195,8 +272,6 @@ function ColumnComponent({ HighLight,
                     onDragEnd={
                         (event, info) => {
                             let callChanges = -1;
-                            // ReactDOM.findDOMNode()
-                            // console.log(info.point.x, info.point.y)
                             const elementsHere = document.elementsFromPoint(info.point.x, info.point.y);
                             for (let i = 0; i < elementsHere.length; i++) {
                                 if (elementsHere[i].classList.contains("column-individual-inner-circle-collection")) {
@@ -228,6 +303,7 @@ function ColumnComponent({ HighLight,
                         (e, info) => {
                             initiateDragOnDiv(e);
                             setstacking(true)
+                            console.log("started")
 
                         }
                     }
@@ -239,22 +315,23 @@ function ColumnComponent({ HighLight,
 
                         return <motion.div
 
-                            animate={stacking ? "stack" : "normal"}
+                            animate={animationType(idx)}
 
                             variants={{
                                 stack: {
                                     scale: Shakeable && (base <= InnerCircles) ? [0.7, 2, 1] : [0, 1],
                                     position: "relative", top: `${getPxFromTop(idx)}px`, left: `${((idx % 3) * -35 + extraRight(idx))}px`,
                                     zIndex: idx,
-                                    display: idx > 17 ? "none" : "flex"
+                                    display: idx > 17 ? "none" : "flex",
+                                    opacity: "1"
                                 },
-                                normal: { scale: Shakeable && (base <= InnerCircles) ? [0.7, 2, 1] : [0, 1], }
+                                normal: { opacity: "1", scale: Shakeable && (base <= InnerCircles) ? [0.7, 2, 1] : [0, 1], }
+                                , noneDisplay: { opacity: "0" }
                             }}
                             transition={{
                                 type: 'spring', bounce: "0.5"
                                 , repeat: base <= InnerCircles && !stacking ? Infinity : 0, duration: 1
                             }}
-                            whileDrag={{ display: "none" }}
                             key={idx}
                             style={{ backgroundColor: `${borderColor}` }}
                             className="inner-circle">
@@ -271,6 +348,7 @@ function ColumnComponent({ HighLight,
             <button className='end-button-right' onClick={removeInnerCircle}><RemoveIcon /></button></div>
 
         <div className="net-value-column"><div style={{ color: `${borderColor}` }} className="axtual-total-value">{visibility ? (base ** order) * InnerCircles : "0"}</div> <div className="plus">{countAndPlus()}</div></div>
+
     </motion.div >
 
     )
