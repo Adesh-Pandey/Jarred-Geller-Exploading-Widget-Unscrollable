@@ -137,7 +137,19 @@ function ColumnComponent({ stacking, _setstacking, HighLight,
         if (count == 1) {
             return ShowTokenLabel ? base ** order || 1 : "";
         }
-        let sendValue = `x${count}`;
+        let sendValue;
+        if (stacking) {
+            // console.log(tokensWhileHover)
+            if (tokensWhileHover == 0) { return `x${count}` }
+            if (count - tokensWhileHover < 0) {
+                return `x${count}`;
+            }
+            // if(count-tokensWhileHover==0)
+            return `x${tokensWhileHover - 14}`
+            // return `x${base ** order}`
+        } else {
+            sendValue = `x${count}`;
+        }
         return sendValue;
     }
     const countAndPlus = () => {
@@ -159,6 +171,7 @@ function ColumnComponent({ stacking, _setstacking, HighLight,
 
     const animationType = (idx: number) => {
         if (stacking) {
+            if (tokensWhileHover == 0) { return "stack" }
             if (idx < tokensWhileHover) {
                 return "stack";
             }
@@ -189,7 +202,7 @@ function ColumnComponent({ stacking, _setstacking, HighLight,
                             settokensWhileHover((base ** (Number(elementsHere[i].id) - order)));
 
                         } else if (order == Number(elementsHere[i].id)) {
-                            settokensWhileHover(15);
+                            settokensWhileHover(0);
 
                         } else {
                             settokensWhileHover(1);
@@ -211,7 +224,7 @@ function ColumnComponent({ stacking, _setstacking, HighLight,
                             settokensWhileHover((base ** (idOftheFinalColumn - order)));
 
                         } else if (order == idOftheFinalColumn) {
-                            settokensWhileHover(15);
+                            settokensWhileHover(0);
                         } else {
                             settokensWhileHover(1);
                         }
@@ -316,16 +329,14 @@ function ColumnComponent({ stacking, _setstacking, HighLight,
                         return <motion.div
 
                             animate={animationType(idx)}
-
                             variants={{
                                 stack: {
                                     scale: Shakeable && (base <= InnerCircles) ? [0.7, 2, 1] : [0, 1],
                                     position: "relative", top: `${getPxFromTop(idx)}px`, left: `${((idx % 3) * -35 + extraRight(idx))}px`,
                                     zIndex: idx,
                                     display: idx > 17 ? "none" : "flex",
-                                    opacity: "1"
                                 },
-                                normal: { opacity: "1", scale: Shakeable && (base <= InnerCircles) ? [0.7, 2, 1] : [0, 1], }
+                                normal: { scale: Shakeable && (base <= InnerCircles) ? [0.7, 2, 1] : [0, 1], }
                                 , noneDisplay: { opacity: "0" }
                             }}
                             transition={{
