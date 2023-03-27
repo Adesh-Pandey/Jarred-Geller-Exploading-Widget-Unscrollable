@@ -292,10 +292,10 @@ function ColumnComponent({ stacking, _setstacking, HighLight,
 
             let newList = [...InnerCircleList]
             let count = InnerCircles - InnerCircleList.length;
-            if (tokensWhileHover > InnerCircles && getCurrentHoverColumn()) {
+            if (tokensWhileHover > InnerCircles && getCurrentHoverColumn() != order) {
+                setnotEnoughTokens(true);
                 let playErrorAudio: any[] = [new Audio(ErrorAudio)]
                 playErrorAudio[0].play()
-                setnotEnoughTokens(true);
             } else
                 // setInnerCircleListDummyDiv([...Array(InnerCircles > 15 ? 15 : InnerCircles)])            
                 if (count == 0) {
@@ -438,7 +438,7 @@ function ColumnComponent({ stacking, _setstacking, HighLight,
                         (e, info) => {
                             initiateDragOnDiv(e);
                             setstacking(true)
-                            console.log("started")
+                            // console.log("started")
 
                         }
                     }
