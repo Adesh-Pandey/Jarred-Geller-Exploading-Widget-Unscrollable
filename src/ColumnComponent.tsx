@@ -185,7 +185,7 @@ function ColumnComponent({ stacking, _setstacking, HighLight,
         outlineColor: "#201c1c",
         boxShadow: "9px 6px 14px -8px rgb(144, 135, 135)",
         outlineWidth: "13px",
-        backgroundColor: "rgb(251 251 198 / 35%)",
+        backgroundColor: "rgb(240 255 6 / 37%)",
         borderRadius: "6px",
     }
 
@@ -354,7 +354,7 @@ function ColumnComponent({ stacking, _setstacking, HighLight,
             } : { backgroundColor: notEnoughTokens ? errorColor : "whitesmoke", border: `3px solid ${borderColor}` }} variants={variant} animate={visibility ? "open" : "closed"} id={`${order}`} className='column-individual-inner-circle-collection'>
                 {tokensWhileHover == -1 || tokensWhileHover == 0 ? "" : <motion.div
                     id={`${order}`}
-
+                    style={{ height: "200px" }}
                     className='column-individual-inner-circle-collection-inner-div'>
 
                     {/* {base ** order || 1} */}
@@ -362,7 +362,7 @@ function ColumnComponent({ stacking, _setstacking, HighLight,
 
                         return <motion.div
 
-                            animate={"normal"}
+                            animate={{ scale: Shakeable && (base <= InnerCircleListDummyDiv.length) ? [0.7, 2, 1] : [0, 1], }}
                             variants={{
                                 stack: {
                                     scale: Shakeable && (base <= InnerCircles) ? [0.7, 2, 1] : [0, 1],
@@ -370,12 +370,12 @@ function ColumnComponent({ stacking, _setstacking, HighLight,
                                     zIndex: idx,
                                     display: idx > 17 ? "none" : "flex",
                                 },
-                                normal: { scale: Shakeable && (base <= InnerCircles) ? [0.7, 2, 1] : [0, 1], }
+                                normal: { scale: Shakeable && (base <= InnerCircleListDummyDiv.length) ? [0.7, 2, 1] : [0, 1], }
                                 , noneDisplay: { opacity: "0" }
                             }}
                             transition={{
                                 type: 'spring', bounce: "0.5"
-                                , repeat: base <= InnerCircles && !stacking ? Infinity : 0, duration: 1
+                                , repeat: base <= InnerCircleListDummyDiv.length ? Infinity : 0, duration: 1
                             }}
                             key={idx}
                             style={{ backgroundColor: `${borderColor}` }}

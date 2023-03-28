@@ -70,7 +70,7 @@
   height: 30px;
   width: 30px;
   border-radius: 20px;
-
+  z-index:1;
   margin: 3px;
   font-family: cursive;
   display: flex;
@@ -229,7 +229,7 @@ input.show-tokens{
   color: #cccccc;
   font-family: cursive;
   font-weight: bolder;
-  z-index:-9;
+  z-index:0;
   /* height: 30px; */
   top: -41%;
   /* margin: 0 auto; */
@@ -244,6 +244,7 @@ input.show-tokens{
   top: -13px;
   left: 29px;
   width: fit-content;
+  z-index:2;
 }
 .token-control>button{
   cursor:pointer;
