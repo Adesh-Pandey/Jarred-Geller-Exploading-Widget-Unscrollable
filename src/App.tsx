@@ -20,6 +20,7 @@ function App() {
 
   return <Provider store={store}>
     <Columns AddButton={AddButton}
+      ToggleColumnDisable={ToggleColumnDisable}
       RemoveButton={RemoveButton}
       HighLightButton={HighlightButton}
       TokenCountLabel={TokenCountLabel}

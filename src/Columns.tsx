@@ -35,10 +35,11 @@ interface Props {
     ColumnOrderReverse: boolean,
     ShowTokenLabelButton: boolean,
     ColumnTotalValue: boolean,
+    ToggleColumnDisable: boolean
 }
 
 
-function Columns({
+function Columns({ ToggleColumnDisable,
     AddButton,
     RemoveButton,
     HighLightButton,
@@ -166,7 +167,12 @@ function Columns({
 
                     {Visibility &&
                         ColumnCollection.map((elem, idx) => {
-                            return <ColumnComponent PopAddAudioReverse={POP_ADD_AUDIO_REVERSE_LIST[idx]} PopAddAudio={POP_ADD_AUDIO_LIST[idx]} stacking={stacking[idx]} _setstacking={setStackingData} HighLight={HighLightList[idx]} setHighLight={setHighLight} columnReverse={columnReverse} borderColor={colorList[idx % colorList.length]} alterVisibility={alterVisibility} visibility={visibilityList[idx]} ShowTokenLabel={ShowTokenLabel} constrainsRef={containerDiv} order={idx} base={Base} key={idx}
+                            return <ColumnComponent HighLightButton={HighLightButton}
+                                ColumnTotalValue={ColumnTotalValue}
+                                TokenCountLabel={TokenCountLabel}
+                                AddRemoveToken={AddRemoveToken}
+                                ToggleColumnDisable={ToggleColumnDisable}
+                                PopAddAudioReverse={POP_ADD_AUDIO_REVERSE_LIST[idx]} PopAddAudio={POP_ADD_AUDIO_LIST[idx]} stacking={stacking[idx]} _setstacking={setStackingData} HighLight={HighLightList[idx]} setHighLight={setHighLight} columnReverse={columnReverse} borderColor={colorList[idx % colorList.length]} alterVisibility={alterVisibility} visibility={visibilityList[idx]} ShowTokenLabel={ShowTokenLabel} constrainsRef={containerDiv} order={idx} base={Base} key={idx}
 
                             />
                         })

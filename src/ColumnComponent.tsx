@@ -34,10 +34,21 @@ interface Props {
     order: number,
     base: number,
     PopAddAudio: string,
-    PopAddAudioReverse: string
+    PopAddAudioReverse: string,
+    HighLightButton: boolean,
+    TokenCountLabel: boolean,
+    AddRemoveToken: boolean,
+    ColumnTotalValue: boolean,
+    ToggleColumnDisable: boolean
 }
 
-function ColumnComponent({ PopAddAudioReverse, PopAddAudio, stacking, _setstacking, HighLight,
+function ColumnComponent({
+    ToggleColumnDisable,
+    HighLightButton,
+    ColumnTotalValue,
+    TokenCountLabel,
+    AddRemoveToken,
+    PopAddAudioReverse, PopAddAudio, stacking, _setstacking, HighLight,
     setHighLight,
     columnReverse,
     borderColor,
@@ -369,21 +380,21 @@ function ColumnComponent({ PopAddAudioReverse, PopAddAudio, stacking, _setstacki
         <div className='column-individual' style={HighLight ? HighLightStyle : {}} id={`${order}`}>
             <div className="count-tokens"
                 style={{ border: (base <= InnerCircles && visibility) ? "2px solid #ea0000" : `2px solid ${highLightOrWhite}`, backgroundColor: notEnoughTokens ? errorColor : "whitesmoke" }}>
-                <div onClick={() => {
+                {HighLightButton ? <div onClick={() => {
                     setHighLight(order);
                     sethighLightOrWhite(HighLight ? "#95959514" : HighLightStyle.backgroundColor)
-                }}><PushPinIcon style={HighLight ? { color: "#4b4848e6" } : { color: "#aba8a8" }} /></div>
-                <div style={{ color: `${borderColor}` }} className='total-token-count'>{visibility ? InnerCircles : "0"}
-                </div>
+                }}><PushPinIcon style={HighLight ? { color: "#4b4848e6" } : { color: "#aba8a8" }} /></div> : ""}
+                {TokenCountLabel ? <div style={{ color: `${borderColor}` }} className='total-token-count'>{visibility ? InnerCircles : "0"}
+                </div> : ""}
                 <div style={{ marginTop: "4px" }}>
-                    <label className="switch">
+                    {ToggleColumnDisable ? <label className="switch">
                         <input checked={visibility ? true : false}
                             onChange={() => {
                                 alterVisibility(order)
                                 dispatch(temporaryDisable(order));
                             }} type="checkbox" />
                         <span className="slider round"></span>
-                    </label></div></div>
+                    </label> : ""}</div></div>
             <motion.div style={base <= InnerCircles ? {
                 outlineColor: "#ea0000",
                 outlineStyle: "auto",
@@ -519,12 +530,12 @@ function ColumnComponent({ PopAddAudioReverse, PopAddAudio, stacking, _setstacki
                 <div className="overlay">{base ** order || 1}</div>
             </motion.div>
         </div>
-        <div className="token-control">
+        {AddRemoveToken ? <div className="token-control">
             <button className='end-button-left' onClick={addInnerCircle}>+</button>
             <button onClick={resetCirclesInthisColumn}>0</button>
-            <button className='end-button-right' onClick={removeInnerCircle}><RemoveIcon /></button></div>
+            <button className='end-button-right' onClick={removeInnerCircle}><RemoveIcon /></button></div> : ""}
 
-        <div className="net-value-column"><div style={{ color: `${borderColor}` }} className="axtual-total-value">{visibility ? CommasAccordingToInternationalNumberSystem((base ** order) * InnerCircles) : "0"}</div> <div className="plus">{countAndPlus()}</div></div>
+        {ColumnTotalValue ? <div className="net-value-column"><div style={{ color: `${borderColor}` }} className="axtual-total-value">{visibility ? CommasAccordingToInternationalNumberSystem((base ** order) * InnerCircles) : "0"}</div> <div className="plus">{countAndPlus()}</div></div> : ""}
 
     </motion.div >
 
