@@ -8,6 +8,18 @@ import ErrorAudio from "./audios/Error-sound-effect.mp3"
 import RemoveIcon from '@mui/icons-material/Remove';
 import PushPinIcon from '@mui/icons-material/PushPin';
 
+
+import ExplosionOfTwo from "./audios/S01_Explosion_2pts.mp3";
+import ExplosionOfThree from "./audios/S01_Explosion_3pts.mp3";
+import ExplosionOfFour from "./audios/S01_Explosion_4pts.mp3";
+import ExplosionOfFive from "./audios/S01_Explosion_5pts.mp3";
+import ExplosionOfMoreThanFive from "./audios/S01_Explosion_plus_5ps.mp3";
+
+import ExtentionTo3 from "./audios/S04_Extension_1-3pts_01.mp3"
+import ExtentionAbove3 from "./audios/S04_Extension_more_3pts_01.mp3"
+
+import DissmissAudio from "./audios/S05_Fast_Movement_Alt_04.mp3"
+
 interface Props {
     stacking: boolean,
     _setstacking: Function,
@@ -20,10 +32,12 @@ interface Props {
     ShowTokenLabel: boolean,
     constrainsRef: RefObject<HTMLDivElement>,
     order: number,
-    base: number
+    base: number,
+    PopAddAudio: string,
+    PopAddAudioReverse: string
 }
 
-function ColumnComponent({ stacking, _setstacking, HighLight,
+function ColumnComponent({ PopAddAudioReverse, PopAddAudio, stacking, _setstacking, HighLight,
     setHighLight,
     columnReverse,
     borderColor,
@@ -34,6 +48,7 @@ function ColumnComponent({ stacking, _setstacking, HighLight,
     order,
     base }: Props) {
     // const [HighLight, setHighLight] = useState(false);
+    const EXPLOSION_AUDIO_LIST = [ExplosionOfTwo, ExplosionOfThree, ExplosionOfFour, ExplosionOfFive, ExplosionOfMoreThanFive]
     const MouseDownSource = useSelector((state: RootState) => state.allState.mouseDownSource)
     const [XandYCoordinates, setXandYCoordinates] = useState({ x: 0, y: 0 })
     const dispatch = useDispatch()
@@ -54,38 +69,58 @@ function ColumnComponent({ stacking, _setstacking, HighLight,
     const [notEnoughTokens, setnotEnoughTokens] = useState(false);
 
     const addInnerCircle = () => {
-        audio?.current?.play();
+        let playPopAudio: any[] = [new Audio(PopAddAudio)];
+        playPopAudio[0].play();
+
+        setTimeout(() => {
+            let playPopAudio: any[] = [new Audio(PopAddAudioReverse)];
+            // let playPopAudio: any[] = [new Audio(PopAddAudio)];
+            playPopAudio[0].play();
+        }, 100);
+
         dispatch(addTokenInColumn(order))
     }
+
     const removeInnerCircle = () => {
         if (InnerCircles == 0) { return }
+
+        let playPopAudio: any[] = [new Audio(PopAddAudioReverse)];
+        playPopAudio[0].play();
+
+        setTimeout(() => {
+            let playPopAudio: any[] = [new Audio(PopAddAudio)];
+            playPopAudio[0].play();
+        }, 100);
+
+
         dispatch(removeTokenInColumn(order))
     }
 
     const [oldCOunt, setoldCOunt] = useState(InnerCircleList.length);
     useEffect(() => {
-        let playPopAudio: any[] = [new Audio(PopAudio)]
+        // let playPopAudio: any[] = [new Audio(PopAudio)]
         if (oldCOunt !== InnerCircles) {
             let change = oldCOunt - InnerCircles;
-            if (change < 0) {
-                change = change * -1;
-            }
-            if (change > 10) {
-                change = 10;
-            }
-
-            for (let index = 0; index < change; index++) {
-
-                setTimeout(() => {
-                    playPopAudio[index].play()
-                }, index * 70);
-
-
-                playPopAudio.push(new Audio(PopAudio));
-
+            // if (change < 0) {
+            //     change = change * -1;
+            // }
+            if (change > 6) {
+                change = 6;
             }
 
-            // Audi.play()
+            if (change > 1) {
+                let playExploadingAudio: any[] = [new Audio(EXPLOSION_AUDIO_LIST[change - 2])]
+
+                playExploadingAudio[0].play()
+            }
+            if (change < -1) {
+                let playExtentionAudio: any[] = [new Audio(ExtentionTo3)];
+                if (change < -3) {
+                    playExtentionAudio.pop()
+                    playExtentionAudio.push(new Audio(ExtentionAbove3))
+                }
+                playExtentionAudio[0].play()
+            }
             setoldCOunt(InnerCircles)
 
         }
@@ -295,6 +330,7 @@ function ColumnComponent({ stacking, _setstacking, HighLight,
             if (tokensWhileHover > InnerCircles && getCurrentHoverColumn() != order) {
                 setnotEnoughTokens(true);
                 let playErrorAudio: any[] = [new Audio(ErrorAudio)]
+                playErrorAudio[0].volume = 0.02;
                 playErrorAudio[0].play()
             } else
                 // setInnerCircleListDummyDiv([...Array(InnerCircles > 15 ? 15 : InnerCircles)])            
@@ -321,7 +357,10 @@ function ColumnComponent({ stacking, _setstacking, HighLight,
     }, [tokensWhileHover])
 
 
+    const CommasAccordingToInternationalNumberSystem = (value: number) => {
 
+        return value.toLocaleString()
+    }
 
 
     const moveableComp = useRef<HTMLDivElement>(null);
@@ -425,6 +464,11 @@ function ColumnComponent({ stacking, _setstacking, HighLight,
                                 }
                             }
 
+                            if (tokensWhileHover != -1 && tokensWhileHover > InnerCircles) {
+                                let playDismissAudio: any[] = [new Audio(DissmissAudio)]
+                                playDismissAudio[0].play()
+                            }
+
                             setInnerCircleList([...Array(InnerCircles > 15 ? 15 : InnerCircles)])
                             setInnerCircleListDummyDiv([...Array(InnerCircles > 15 ? 15 : InnerCircles)])
 
@@ -480,7 +524,7 @@ function ColumnComponent({ stacking, _setstacking, HighLight,
             <button onClick={resetCirclesInthisColumn}>0</button>
             <button className='end-button-right' onClick={removeInnerCircle}><RemoveIcon /></button></div>
 
-        <div className="net-value-column"><div style={{ color: `${borderColor}` }} className="axtual-total-value">{visibility ? (base ** order) * InnerCircles : "0"}</div> <div className="plus">{countAndPlus()}</div></div>
+        <div className="net-value-column"><div style={{ color: `${borderColor}` }} className="axtual-total-value">{visibility ? CommasAccordingToInternationalNumberSystem((base ** order) * InnerCircles) : "0"}</div> <div className="plus">{countAndPlus()}</div></div>
 
     </motion.div >
 
