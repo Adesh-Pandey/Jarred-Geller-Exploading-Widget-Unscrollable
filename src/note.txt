@@ -1,0 +1,137 @@
+import React, { RefObject, useEffect, useState } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { RootState } from './redux/store'
+import { mouseDownOnTheToken, mouseUpOnColumn, addTokenInColumn, removeTokenInColumn } from './redux/mouseSlice'
+import { motion, useDragControls } from "framer-motion"
+
+function ColumnComponent({ constrainsRef, order, base }: { constrainsRef: RefObject<HTMLDivElement>, order: number, base: number }) {
+
+    const MouseDown = useSelector((state: RootState) => state.allState.mouseDown)
+    const dispatch = useDispatch()
+    const circleListObject = useSelector((state: RootState) => state.allState.CircleListObject)
+    const InnerCircles = useSelector((state: RootState) => state.allState.InnerCirclesList[order])
+
+    const getInnerCircleListForThecolumn = () => {
+        let ans = []
+        for (let i = 0; i < circleListObject.length; i++) {
+            if (circleListObject[i].parentId == order) {
+                ans.push(circleListObject[i])
+            }
+        }
+        return ans
+    }
+
+    const [InnerCircleList, setInnerCircleList] = useState(getInnerCircleListForThecolumn())
+    const [Shakeable, setShakeable] = useState(false);
+
+    const [Rebound, setRebound] = useState(true);
+
+    const addInnerCircle = () => {
+        dispatch(addTokenInColumn(order))
+    }
+    const removeInnerCircle = () => {
+        if (InnerCircles == 0) { return }
+        dispatch(removeTokenInColumn(order))
+    }
+
+
+
+    const initiateDrag = (e: MouseEvent, info: Object) => {
+        e.preventDefault()
+        // console.log(info)
+        setRebound(false);
+        dispatch(mouseDownOnTheToken(order));
+    }
+
+    const stopDrag = (info: any) => {
+
+    }
+    useEffect(() => {
+
+        setTimeout(() => {
+            setShakeable((base <= InnerCircles));
+            // setInnerCircleList([...Array(InnerCircles)])
+            // console.log(circleListObject)
+        }, 50);
+        // console.log(InnerCircles)
+
+    }, [InnerCircles])
+    // const dragControls = useDragControls();
+
+    // function startDrag(event: any) {
+
+    //     dragControls.start(event, { snapToCursor: true });
+    // }
+
+
+    return (<div>
+        <div className='column-individual' id={`${order}`}>
+            <div className="count-tokens">{InnerCircles}</div>
+            <motion.div id={`${order}`} className='column-individual-inner-circle-collection'>
+                {/* {base ** order || 1} */}
+                {InnerCircleList.map((count, idx) => {
+                    return <motion.div
+
+                        whileDrag={{ scale: 0.8 }}
+
+                        animate={{ scale: Shakeable && (base <= InnerCircles) ? [0.7, 2, 1] : [0, 1], }}
+                        dragConstraints={constrainsRef}
+                        dragElastic={0.1}
+                        dragMomentum={false}
+                        // dragControls={dragControls}
+                        // onPointerDown={startDrag}
+                        // dragPropagation
+                        dragSnapToOrigin={true}
+                        transition={{
+                            type: 'spring', bounce: "0.5"
+                            , repeat: base <= InnerCircles ? Infinity : 0, duration: 1
+                        }}
+
+                        onDragStart={
+                            initiateDrag
+                            // (event, info) => console.log(info.point.x, info.point.y)
+                        }
+                        onDragEnd={
+                            (event, info) => {
+                                let callChanges = -1;
+                                // console.log(info.point.x, info.point.y)
+                                for (let i = 0; i < document.elementsFromPoint(info.point.x, info.point.y).length; i++) {
+                                    if (document.elementsFromPoint(info.point.x, info.point.y)[i].classList.contains("column-individual")) {
+                                        callChanges = i;
+                                        // console.log(document.elementsFromPoint(info.point.x, info.point.y)[i])
+                                    }
+
+                                }
+                                if (callChanges != -1) {
+                                    if (document.elementsFromPoint(info.point.x, info.point.y)[callChanges].id) {
+                                        let or = Number(document.elementsFromPoint(info.point.x, info.point.y)[callChanges].id)
+
+                                        if (or >= 0)
+                                            dispatch(mouseUpOnColumn(or))
+                                        setRebound(false)
+                                    }
+                                }
+
+                                setInnerCircleList(InnerCircleList.splice(idx, 1))
+
+                                // setInnerCircleList([...Array(InnerCircles)])
+                                // stopDrag(info)
+                            }
+                        }
+                        key={idx}
+
+
+                        className="inner-circle">
+                    </motion.div>
+                })}
+            </motion.div>
+        </div>
+        <button onClick={addInnerCircle}>+</button>
+        <button onClick={removeInnerCircle}>-</button>
+        <div className="net-value-column">{(base ** order) * InnerCircles}</div>
+    </div >
+
+    )
+}
+
+export default ColumnComponent;
