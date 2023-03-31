@@ -1,7 +1,7 @@
 import React, { RefObject, useEffect, useRef, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from './redux/store'
-import { mouseDownOnTheToken, mouseUpOnColumn, addTokenInColumn, removeTokenInColumn, resetCircles, temporaryDisable } from './redux/mouseSlice'
+import { mouseDownOnTheToken, mouseUpOnColumn, addTokenInColumn, removeTokenInColumn, resetCircles, temporaryDisable, changeTokensInColumn, draggFromServer } from './redux/mouseSlice'
 import { motion } from "framer-motion"
 import PopAudio from './audios/addedPopSound.mp3'
 import ErrorAudio from "./audios/Error-sound-effect.mp3"
@@ -21,13 +21,14 @@ import ExtentionAbove3 from "./audios/S04_Extension_more_3pts_01.mp3"
 import DissmissAudio from "./audios/S05_Fast_Movement_Alt_04.mp3"
 
 interface Props {
+    socket: any,
+    roomID: string,
     stacking: boolean,
     _setstacking: Function,
     HighLight: boolean,
     setHighLight: Function,
     columnReverse: boolean,
     borderColor: String,
-    alterVisibility: Function,
     visibility: boolean,
     ShowTokenLabel: boolean,
     constrainsRef: RefObject<HTMLDivElement>,
@@ -39,10 +40,14 @@ interface Props {
     TokenCountLabel: boolean,
     AddRemoveToken: boolean,
     ColumnTotalValue: boolean,
-    ToggleColumnDisable: boolean
+    ToggleColumnDisable: boolean,
+    InnerColumnValue: boolean,
 }
 
 function ColumnComponent({
+    InnerColumnValue,
+    roomID,
+    socket,
     ToggleColumnDisable,
     HighLightButton,
     ColumnTotalValue,
@@ -52,7 +57,6 @@ function ColumnComponent({
     setHighLight,
     columnReverse,
     borderColor,
-    alterVisibility,
     visibility,
     ShowTokenLabel,
     constrainsRef,
@@ -65,6 +69,8 @@ function ColumnComponent({
     const dispatch = useDispatch()
     const ColumnCollection = useSelector((state: RootState) => state.allState.ColumnCollection.length)
     const InnerCircles = useSelector((state: RootState) => state.allState.InnerCirclesList[order])
+    const InnerCirclesList = useSelector((state: RootState) => state.allState.InnerCirclesList)
+
     const audio = useRef<HTMLAudioElement>(null);
     // const [stacking, _setstacking] = useState(false)
     const [highLightOrWhite, sethighLightOrWhite] = useState("#95959514");
@@ -79,7 +85,61 @@ function ColumnComponent({
     const errorColor = "red";
     const [notEnoughTokens, setnotEnoughTokens] = useState(false);
 
+
+
+    useEffect(() => {
+        socket.on("CHANGE_IN_COLUMN_TOKEN_ADD", (data: any) => {
+            let playPopAudio: any[] = [new Audio(PopAddAudio)];
+            playPopAudio[0].play();
+
+            setTimeout(() => {
+                let playPopAudio: any[] = [new Audio(PopAddAudioReverse)];
+                // let playPopAudio: any[] = [new Audio(PopAddAudio)];
+                playPopAudio[0].play();
+            }, 100);
+            dispatch(changeTokensInColumn([data.ColumnIndex, data.InnerCircles]))
+            // console.log(data)
+        })
+
+        socket.on("CHANGE_IN_COLUMN_TOKEN_SUBTRACT", (data: any) => {
+            let playPopAudio: any[] = [new Audio(PopAddAudioReverse)];
+            playPopAudio[0].play();
+
+            setTimeout(() => {
+                let playPopAudio: any[] = [new Audio(PopAddAudio)];
+                playPopAudio[0].play();
+            }, 100);
+
+            dispatch(changeTokensInColumn([data.ColumnIndex, data.InnerCircles]))
+            // console.log(data)
+        })
+        socket.on("CHANGE_IN_COLUMN_TOKEN_ZERO", (data: any) => {
+
+            dispatch(changeTokensInColumn([data.ColumnIndex, data.InnerCircles]))
+            // console.log(data)
+        })
+
+        socket.on("ToggleOnAndOff", (data: any) => {
+
+            dispatch(temporaryDisable([data.ColumnIndex, data.value]))
+            // console.log(data)
+        })
+        socket.on("DRAG_SUCCESSFUL", (data: any) => {
+
+            // console.log(data);
+            dispatch(draggFromServer([data.MouseDownSource, data.mouseUpOnColumn, data.MouseDownSourceTokens, data.MouseUpSourceTokens]))
+        })
+
+
+
+
+    }, [socket])
+
+
     const addInnerCircle = () => {
+
+        socket.emit("changeInColumnToken", { type: "add", room: roomID, ColumnIndex: order, InnerCircles: InnerCircles + 1 })
+
         let playPopAudio: any[] = [new Audio(PopAddAudio)];
         playPopAudio[0].play();
 
@@ -94,7 +154,7 @@ function ColumnComponent({
 
     const removeInnerCircle = () => {
         if (InnerCircles == 0) { return }
-
+        socket.emit("changeInColumnToken", { type: "subtract", room: roomID, ColumnIndex: order, InnerCircles: InnerCircles - 1 })
         let playPopAudio: any[] = [new Audio(PopAddAudioReverse)];
         playPopAudio[0].play();
 
@@ -174,6 +234,7 @@ function ColumnComponent({
 
     }
     const resetCirclesInthisColumn = () => {
+        socket.emit("changeInColumnToken", { type: "zero", room: roomID, ColumnIndex: order, InnerCircles: 0 })
         dispatch(resetCircles(order));
     }
 
@@ -379,10 +440,12 @@ function ColumnComponent({
     return (<motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.7 }}>
         <div className='column-individual' style={HighLight ? HighLightStyle : {}} id={`${order}`}>
             <div className="count-tokens"
-                style={{ border: (base <= InnerCircles && visibility) ? "2px solid #ea0000" : `2px solid ${highLightOrWhite}`, backgroundColor: notEnoughTokens ? errorColor : "whitesmoke" }}>
+                style={{ border: (base <= InnerCircles && visibility) ? "2px solid #ea0000" : `2px solid ${!HighLight ? "#95959514" : HighLightStyle.backgroundColor}`, backgroundColor: notEnoughTokens ? errorColor : "whitesmoke" }}>
                 {HighLightButton ? <div onClick={() => {
+                    socket.emit("HIGHLIGHT", { room: roomID, ColumnIndex: order, value: HighLight })
                     setHighLight(order);
-                    sethighLightOrWhite(HighLight ? "#95959514" : HighLightStyle.backgroundColor)
+
+
                 }}><PushPinIcon style={HighLight ? { color: "#4b4848e6" } : { color: "#aba8a8" }} /></div> : ""}
                 {TokenCountLabel ? <div style={{ color: `${borderColor}` }} className='total-token-count'>{visibility ? InnerCircles : "0"}
                 </div> : ""}
@@ -390,8 +453,8 @@ function ColumnComponent({
                     {ToggleColumnDisable ? <label className="switch">
                         <input checked={visibility ? true : false}
                             onChange={() => {
-                                alterVisibility(order)
-                                dispatch(temporaryDisable(order));
+                                socket.emit("ToggleOnAndOff", { room: roomID, ColumnIndex: order, value: TemporaryDisabledList[order] })
+                                dispatch(temporaryDisable([order, TemporaryDisabledList[order] == -1 ? 1 : -1]));
                             }} type="checkbox" />
                         <span className="slider round"></span>
                     </label> : ""}</div></div>
@@ -470,8 +533,16 @@ function ColumnComponent({
                                 if (elementsHere[callChanges].id) {
                                     let or = Number(elementsHere[callChanges].id)
 
-                                    if (or >= 0)
+                                    if (or >= 0) {
                                         dispatch(mouseUpOnColumn(or))
+                                        socket.emit("DRAG_SUCCESSFUL", {
+                                            room: roomID,
+                                            MouseDownSource: MouseDownSource,
+                                            MouseDownSourceTokens: InnerCirclesList[MouseDownSource],
+                                            MouseUpSourceTokens: InnerCirclesList[or],
+                                            mouseUpOnColumn: or
+                                        })
+                                    }
                                 }
                             }
 
@@ -527,13 +598,14 @@ function ColumnComponent({
                         </motion.div>
 
                     })}</motion.div>
-                <div className="overlay">{base ** order || 1}</div>
+                <div className="overlay">{InnerColumnValue ? base ** order || 1 : " "}{order == 0 && !InnerColumnValue ? 1 : ""}</div>
             </motion.div>
-        </div>
+        </div >
         {AddRemoveToken ? <div className="token-control">
-            <button className='end-button-left' onClick={addInnerCircle}>+</button>
-            <button onClick={resetCirclesInthisColumn}>0</button>
-            <button className='end-button-right' onClick={removeInnerCircle}><RemoveIcon /></button></div> : ""}
+            < button disabled={TemporaryDisabledList[order] == -1 ? true : false} className='end-button-left' onClick={addInnerCircle} > +</button >
+            <button disabled={TemporaryDisabledList[order] == -1 ? true : false} onClick={resetCirclesInthisColumn}>0</button>
+            <button disabled={TemporaryDisabledList[order] == -1 ? true : false} className='end-button-right' onClick={removeInnerCircle}><RemoveIcon /></button></div > : ""
+        }
 
         {ColumnTotalValue ? <div className="net-value-column"><div style={{ color: `${borderColor}` }} className="axtual-total-value">{visibility ? CommasAccordingToInternationalNumberSystem((base ** order) * InnerCircles) : "0"}</div> <div className="plus">{countAndPlus()}</div></div> : ""}
 

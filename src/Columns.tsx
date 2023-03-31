@@ -7,7 +7,7 @@ import AddIcon from '@mui/icons-material/Add';
 
 import RemoveIcon from '@mui/icons-material/Remove';
 
-import { addColumn, changeBase, clearAllStateInTheReduxState, removeColumn } from './redux/mouseSlice'
+import { addColumn, changeBase, clearAllStateInTheReduxState, HighLightEvent, removeColumn, setColumnLengthTo } from './redux/mouseSlice'
 import type { RootState } from './redux/store'
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -25,6 +25,8 @@ import PopAddAudioReverse5 from "./audios/S08_Pop_Reverse_04.mp3";
 
 
 interface Props {
+    socket: any,
+    roomID: string,
     AddButton: boolean,
     RemoveButton: boolean,
     HighLightButton: boolean,
@@ -35,11 +37,13 @@ interface Props {
     ColumnOrderReverse: boolean,
     ShowTokenLabelButton: boolean,
     ColumnTotalValue: boolean,
-    ToggleColumnDisable: boolean
+    ToggleColumnDisable: boolean,
+    TotalValueInBaseTen: boolean,
+    InnerColumnValue: boolean
 }
 
 
-function Columns({ ToggleColumnDisable,
+function Columns({ InnerColumnValue, TotalValueInBaseTen, socket, roomID, ToggleColumnDisable,
     AddButton,
     RemoveButton,
     HighLightButton,
@@ -67,10 +71,15 @@ function Columns({ ToggleColumnDisable,
     const [visibilityList, setvisibilityList] = useState([...Array(ColumnCollection.length)].map(x => true))
 
     const [stacking, setstacking] = useState([...Array(ColumnCollection.length).map(x => false)]);
-    const [HighLightList, setHighLightList] = useState([...Array(ColumnCollection.length)].map(x => false));
+
+
+    const HighLightState = useSelector((state: RootState) => state.allState.HighLightList)
 
     const handleSelectChange = (event: any) => {
-        dispatch(changeBase(Number(event.target.value))); setselected(event.target.value);
+        dispatch(changeBase(Number(event.target.value)));
+        setselected(event.target.value);
+        socket.emit("BASE_CHANGE", { selected: event.target.value, room: roomID })
+
     }
     const totalValue = () => {
         let finalVal = 0;
@@ -80,16 +89,14 @@ function Columns({ ToggleColumnDisable,
         }
         return finalVal.toLocaleString();
     }
-    const alterVisibility = (order: number) => {
-        let newList = [...visibilityList]
-        newList[order] = !newList[order];
-        setvisibilityList([...newList]);
-    }
+
 
     const ClearAllState = () => {
+
+        socket.emit("clearAllState", { room: roomID })
+
         dispatch(clearAllStateInTheReduxState());
         setvisibilityList([...[...Array(ColumnCollection.length)].map(x => true), true]);
-        setHighLightList([...Array(ColumnCollection.length)].map(x => false));
         setstacking([...Array(ColumnCollection.length)].map(x => false));
         setShowTokenLabel(true);
         setselected("2");
@@ -101,27 +108,23 @@ function Columns({ ToggleColumnDisable,
         if (visibilityList.length != 0) {
             if (ColumnCollection.length > visibilityList.length) {
                 setvisibilityList([...visibilityList, true]);
-                setHighLightList([...HighLightList, false]);
                 setstacking([...stacking, false]);
+
             } else if (ColumnCollection.length < visibilityList.length) {
                 let newList = [[...visibilityList], [...stacking]];
                 newList[0].pop();
                 setvisibilityList(newList[0]);
                 newList[1].pop()
                 setstacking(newList[1])
-                let newHighLightList = [...HighLightList];
-                newHighLightList.pop()
-                setHighLightList(newHighLightList)
-
-
             }
         }
     }, [ColumnCollection])
 
     const setHighLight = (idx: number) => {
-        let newHighLight = [...HighLightList];
-        newHighLight[idx] = !newHighLight[idx];
-        setHighLightList(newHighLight)
+        // let newHighLight = [...HighLightList];
+        // newHighLight[idx] = !newHighLight[idx];
+        // setHighLightList(newHighLight)
+        dispatch(HighLightEvent([idx, HighLightState[idx] ? 0 : 1]))
     }
     const setStackingData = (data: boolean, idx: number) => {
         let newStackList = [...stacking];
@@ -129,10 +132,46 @@ function Columns({ ToggleColumnDisable,
         setstacking(newStackList)
     }
 
+    useEffect(() => {
+        socket.on("HIGHLIGHT", (data: any) => {
+            dispatch(HighLightEvent([data.ColumnIndex, data.value ? 0 : 1]))
+        })
+
+        socket.on("SHOW_TOKEN_LABEL", (data: boolean) => {
+            setShowTokenLabel(data);
+        })
+
+        socket.on("ColumnReverse", (data: boolean) => {
+            setcolumnReverse(data)
+        })
+
+        socket.on("ADD_COLUMN", (data: number) => {
+            dispatch(setColumnLengthTo(data + 1))
+        })
+        socket.on("BASE_CHANGE", (data: any) => {
+            dispatch(changeBase(Number(data.selected)));
+            setselected(data.selected)
+
+        })
+        socket.on("REMOVE_COLUMN", (data: number) => {
+            dispatch(setColumnLengthTo(data - 1))
+        })
+        socket.on("clearAllState", () => {
+            ClearAllState();
+        })
+        // socket.on("CHANGE_IN_COLUMN_TOKEN", (data: any) => {
+        //     console.log(data)
+        // })
+
+    }, [socket])
+
+
     return (<div className='main-app-wrapper-container'>
         <div className='show-label-restart' style={{ fontFamily: "cursive" }}>{ShowTokenLabelButton ? <div style={{ cursor: "default" }}>
             <input className='show-tokens' type="checkbox" checked={ShowTokenLabel} value={ShowTokenLabel ? 1 : 0} onChange={() => {
+                socket.emit("SHOW_TOKEN_LABEL", { room: roomID, ShowTokenLabel: !ShowTokenLabel })
                 setShowTokenLabel(!ShowTokenLabel);
+
             }} /> Show Token Label</div> : ""} {Restart ? <button type="button" onClick={() => { ClearAllState() }}>Restart</button> : ""}</div>
 
         <div className="choose-conversion">
@@ -140,8 +179,7 @@ function Columns({ ToggleColumnDisable,
                 {ChangeBase ? <div className="choose-conversion-list">
 
                     <Select disableUnderline value={selected} onChange={handleSelectChange} className='choose-conversion-list-option' name="convert-from" id="from">
-                        <MenuItem value="2"> 1 <ArrowRightAltIcon className
-                            ='reverse-arrow' /> 2 </MenuItem>
+                        <MenuItem value="2"> 1 <ArrowRightAltIcon className='reverse-arrow' /> 2 </MenuItem>
                         <MenuItem value="3">1 <ArrowRightAltIcon className='reverse-arrow' />  3</MenuItem>
                         <MenuItem value="4">1 <ArrowRightAltIcon className='reverse-arrow' />  4</MenuItem>
                         <MenuItem value="5">1 <ArrowRightAltIcon className='reverse-arrow' />  5</MenuItem>
@@ -154,25 +192,31 @@ function Columns({ ToggleColumnDisable,
                         <MenuItem value="12">1 <ArrowRightAltIcon className='reverse-arrow' />  12</MenuItem>
                     </Select>
                 </div> : ""}
-            </div></div>{ColumnOrderReverse ? <div className="column-order-reverse"> <button type="button" onClick={() => { setcolumnReverse(!columnReverse) }}> Column Order Reverse</button></div> : ""}
+            </div></div>{ColumnOrderReverse ? <div className="column-order-reverse"> <button type="button" onClick={() => { socket.emit("ColumnReverse", { ColumnReverse: !columnReverse, room: roomID }); setcolumnReverse(!columnReverse) }}> Column Order Reverse</button></div> : ""}
         <div className="results-and-boxes">
             <div className="parent-column-collection-container">
                 {AddButton ? <button type="button"
                     onClick={(e) => {
-                        if (ColumnCollection.length < 6)
+                        if (ColumnCollection.length < 6) {
                             dispatch(addColumn())
+                            socket.emit("ADD_COLUMN", { ColumnLength: ColumnCollection.length, room: roomID })
+                        }
                     }} className="add-column"><AddIcon className='icon-class' />
                 </button> : ""}
                 <div ref={containerDiv} style={{ flexDirection: columnReverse ? "row-reverse" : "row" }} className="column-collection-container">
 
                     {Visibility &&
                         ColumnCollection.map((elem, idx) => {
-                            return <ColumnComponent HighLightButton={HighLightButton}
+                            return <ColumnComponent
+                                InnerColumnValue={InnerColumnValue}
+                                socket={socket}
+                                roomID={roomID}
+                                HighLightButton={HighLightButton}
                                 ColumnTotalValue={ColumnTotalValue}
                                 TokenCountLabel={TokenCountLabel}
                                 AddRemoveToken={AddRemoveToken}
                                 ToggleColumnDisable={ToggleColumnDisable}
-                                PopAddAudioReverse={POP_ADD_AUDIO_REVERSE_LIST[idx]} PopAddAudio={POP_ADD_AUDIO_LIST[idx]} stacking={stacking[idx]} _setstacking={setStackingData} HighLight={HighLightList[idx]} setHighLight={setHighLight} columnReverse={columnReverse} borderColor={colorList[idx % colorList.length]} alterVisibility={alterVisibility} visibility={visibilityList[idx]} ShowTokenLabel={ShowTokenLabel} constrainsRef={containerDiv} order={idx} base={Base} key={idx}
+                                PopAddAudioReverse={POP_ADD_AUDIO_REVERSE_LIST[idx]} PopAddAudio={POP_ADD_AUDIO_LIST[idx]} stacking={stacking[idx]} _setstacking={setStackingData} HighLight={HighLightState[idx]} setHighLight={setHighLight} columnReverse={columnReverse} borderColor={colorList[idx % colorList.length]} visibility={TemporaryDisabledList[idx] == -1 ? false : true} ShowTokenLabel={ShowTokenLabel} constrainsRef={containerDiv} order={idx} base={Base} key={idx}
 
                             />
                         })
@@ -181,13 +225,17 @@ function Columns({ ToggleColumnDisable,
                 </div>
                 {RemoveButton ? <button type="button"
                     onClick={(e) => {
-                        ColumnCollection.length > 2 ? dispatch(removeColumn()) : "";
+
+                        if (ColumnCollection.length > 2) {
+                            dispatch(removeColumn())
+                            socket.emit("REMOVE_COLUMN", { ColumnLength: ColumnCollection.length, room: roomID })
+                        };
                     }} className="remove-column"><RemoveIcon className="icon-class" />
                 </button> : ""}
             </div>
         </div>
 
-        <div className="result"><div style={{ cursor: "cell" }}><div>{"= "} {totalValue()}</div> <div className="base-10-note">in Base 10</div></div></div>
+        {TotalValueInBaseTen ? <div className="result"><div style={{ cursor: "cell" }}><div>{"= "} {totalValue()}</div> <div className="base-10-note">in Base 10</div></div></div> : ""}
 
     </div>
     )

@@ -6,10 +6,11 @@ export interface DotState {
     mouseDown: boolean,
     mouseupLocation: number,
     mouseDownSource: number,
-    mouseDownCircle: number,
     InnerCirclesList: number[],
     ColumnCollection: number[],
-    TemporaryDiableList: number[]
+    TemporaryDiableList: number[],
+    HighLightList: boolean[],
+
 }
 
 
@@ -18,25 +19,29 @@ const initialState: DotState = {
     mouseDown: false,
     mouseupLocation: -1,
     mouseDownSource: -1,
-    mouseDownCircle: -1,
     InnerCirclesList: [0, 0, 0],
     ColumnCollection: [0, 1, 2],
-    TemporaryDiableList: [0, 0, 0]
+    TemporaryDiableList: [0, 0, 0],
+    HighLightList: [false, false, false]
 }
 
 export const DotSlice = createSlice({
     name: 'allState',
     initialState,
     reducers: {
+        HighLightEvent: (state, action: PayloadAction<number[]>) => {
+            state.HighLightList[action.payload[0]] = action.payload[1] == 1 ? true : false;
+        }
+        ,
         clearAllStateInTheReduxState: (state) => {
             state.base = 2;
             state.mouseDown = false;
             state.mouseupLocation = -1;
             state.mouseDownSource = -1;
-            state.mouseDownCircle = -1;
             state.InnerCirclesList = [0, 0, 0];
             state.ColumnCollection = [0, 1, 2];
             state.TemporaryDiableList = [0, 0, 0]
+            state.HighLightList = [false, false, false]
         },
         resetCircles: (state, action: PayloadAction<number>) => {
             if (state.TemporaryDiableList[action.payload] == -1) {
@@ -46,11 +51,11 @@ export const DotSlice = createSlice({
             state.TemporaryDiableList[action.payload] = 0;
 
         },
-        temporaryDisable: (state, action: PayloadAction<number>) => {
-            if (state.TemporaryDiableList[action.payload] != -1) {
-                state.TemporaryDiableList[action.payload] = -1;
+        temporaryDisable: (state, action: PayloadAction<number[]>) => {
+            if (action.payload[1] == -1) {
+                state.TemporaryDiableList[action.payload[0]] = action.payload[1];
             } else {
-                state.TemporaryDiableList[action.payload] = state.InnerCirclesList[action.payload]
+                state.TemporaryDiableList[action.payload[0]] = state.InnerCirclesList[action.payload[0]]
             }
 
         }
@@ -62,7 +67,7 @@ export const DotSlice = createSlice({
             }
             state.ColumnCollection.pop()
             state.InnerCirclesList.pop();
-
+            state.HighLightList.pop()
             state.TemporaryDiableList.pop()
         },
         changeBase: (state, action: PayloadAction<number>) => {
@@ -72,12 +77,36 @@ export const DotSlice = createSlice({
             state.ColumnCollection.push(state.ColumnCollection.length);
             state.InnerCirclesList.push(0);
             state.TemporaryDiableList.push(0);
+            state.HighLightList.push(false)
+        },
+        setColumnLengthTo: (state, action: PayloadAction<number>) => {
+            let NewColumnCollection = [[...state.ColumnCollection], [...state.InnerCirclesList], [...state.TemporaryDiableList]];
+
+            if (NewColumnCollection[0].length < action.payload) {
+                while (NewColumnCollection[0].length < action.payload) {
+                    NewColumnCollection[0].push(NewColumnCollection[0].length)
+                    state.InnerCirclesList.push(0);
+                    state.HighLightList.push(false)
+                    state.TemporaryDiableList.push(0);
+                }
+                state.ColumnCollection = NewColumnCollection[0];
+            } else {
+
+                while (NewColumnCollection[0].length > action.payload) {
+                    NewColumnCollection[0].pop()
+                    state.HighLightList.pop()
+                    NewColumnCollection[1].pop()
+                    NewColumnCollection[2].pop()
+                }
+                state.ColumnCollection = NewColumnCollection[0];
+                state.InnerCirclesList = NewColumnCollection[1];
+                state.TemporaryDiableList = NewColumnCollection[2];
+            }
         }
         ,
         mouseDownOnTheToken: (state, action: PayloadAction<number[]>) => {
             state.mouseDown = true;
             state.mouseDownSource = action.payload[0];
-            state.mouseDownCircle = action.payload[1]
         },
         mouseUpOnColumn: (state, action: PayloadAction<number>) => {
             state.mouseDown = false;
@@ -97,7 +126,6 @@ export const DotSlice = createSlice({
             }
             const numberOfTokenRequired = state.base ** (decider)
 
-
             if (!goingToLower) {
                 if (state.InnerCirclesList[state.mouseDownSource] >= numberOfTokenRequired) {
 
@@ -107,8 +135,6 @@ export const DotSlice = createSlice({
                     state.TemporaryDiableList[state.mouseupLocation] += 1;
                 }
             } else {
-
-
                 state.InnerCirclesList[state.mouseDownSource] -= 1;
                 state.InnerCirclesList[state.mouseupLocation] += numberOfTokenRequired;
                 state.TemporaryDiableList[state.mouseDownSource] -= 1;
@@ -139,12 +165,56 @@ export const DotSlice = createSlice({
             state.InnerCirclesList[action.payload] -= 1;
             state.TemporaryDiableList[action.payload] -= 1;
         },
+        changeTokensInColumn: (state, action: PayloadAction<number[]>) => {
+            // console.log(action.payload)
+            state.InnerCirclesList[action.payload[0]] = action.payload[1];
+            if (state.TemporaryDiableList[action.payload[0]] !== -1) {
+                state.TemporaryDiableList[action.payload[0]] = action.payload[1]
+            }
+        },
+        draggFromServer: (state, action: PayloadAction<number[]>) => {
+
+            state.mouseupLocation = action.payload[1];
+            state.mouseDownSource = action.payload[0]
+            state.InnerCirclesList[state.mouseDownSource] = action.payload[2];
+            state.InnerCirclesList[state.mouseupLocation] = action.payload[3];
+            state.TemporaryDiableList[state.mouseDownSource] = action.payload[2];
+            state.TemporaryDiableList[state.mouseupLocation] = action.payload[3];
+
+            let goingToLower = false;
+            let decider = state.mouseupLocation - state.mouseDownSource;
+            if (decider < 0) {
+                decider *= -1
+                goingToLower = true;
+            }
+            const numberOfTokenRequired = state.base ** (decider)
+
+            if (!goingToLower) {
+                if (state.InnerCirclesList[state.mouseDownSource] >= numberOfTokenRequired) {
+
+                    state.InnerCirclesList[state.mouseDownSource] -= numberOfTokenRequired;
+                    state.InnerCirclesList[state.mouseupLocation] += 1;
+                    state.TemporaryDiableList[state.mouseDownSource] -= numberOfTokenRequired;
+                    state.TemporaryDiableList[state.mouseupLocation] += 1;
+                }
+            } else {
+                state.InnerCirclesList[state.mouseDownSource] -= 1;
+                state.InnerCirclesList[state.mouseupLocation] += numberOfTokenRequired;
+                state.TemporaryDiableList[state.mouseDownSource] -= 1;
+                state.TemporaryDiableList[state.mouseupLocation] += numberOfTokenRequired;
+            }
+
+            state.mouseupLocation = -1;
+            state.mouseDownSource = -1;
+        },
 
     },
 })
 
 // Action creators are generated for each case reducer function
-export const { clearAllStateInTheReduxState,
+export const { draggFromServer, HighLightEvent, changeTokensInColumn
+    , setColumnLengthTo
+    , clearAllStateInTheReduxState,
     temporaryDisable,
     resetCircles,
     removeColumn,
