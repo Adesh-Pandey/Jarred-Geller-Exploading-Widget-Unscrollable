@@ -64,10 +64,10 @@ function Columns({ InnerColumnValue, TotalValueInBaseTen, socket, roomID, Toggle
     const containerDiv = useRef<HTMLDivElement>(null);
     const dispatch = useDispatch()
     const ColumnCollection = useSelector((state: RootState) => state.allState.ColumnCollection)
-    const [selected, setselected] = useState("2")
+    const [selected, setselected] = useState(Base > 1 ? String(Base) : "2")
     const [ShowTokenLabel, setShowTokenLabel] = useState(true)
     const TemporaryDisabledList = useSelector((state: RootState) => state.allState.TemporaryDiableList)
-
+    const SelectRef = useRef<HTMLDivElement>(null)
     const [visibilityList, setvisibilityList] = useState([...Array(ColumnCollection.length)].map(x => true))
 
     const [stacking, setstacking] = useState([...Array(ColumnCollection.length).map(x => false)]);
@@ -103,6 +103,13 @@ function Columns({ InnerColumnValue, TotalValueInBaseTen, socket, roomID, Toggle
         setcolumnReverse(true);
     }
 
+
+    useEffect(() => {
+        // SelectRef.current?.nodeValue = String(Base);
+        setselected(String(Base))
+    }, [Base])
+
+
     useEffect(() => {
 
         if (visibilityList.length != 0) {
@@ -121,9 +128,6 @@ function Columns({ InnerColumnValue, TotalValueInBaseTen, socket, roomID, Toggle
     }, [ColumnCollection])
 
     const setHighLight = (idx: number) => {
-        // let newHighLight = [...HighLightList];
-        // newHighLight[idx] = !newHighLight[idx];
-        // setHighLightList(newHighLight)
         dispatch(HighLightEvent([idx, HighLightState[idx] ? 0 : 1]))
     }
     const setStackingData = (data: boolean, idx: number) => {

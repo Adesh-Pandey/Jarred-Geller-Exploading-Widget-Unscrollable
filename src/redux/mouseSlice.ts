@@ -25,6 +25,8 @@ const initialState: DotState = {
     HighLightList: [false, false, false]
 }
 
+
+
 export const DotSlice = createSlice({
     name: 'allState',
     initialState,
@@ -61,6 +63,16 @@ export const DotSlice = createSlice({
         }
 
         ,
+        setListsFromServer: (state, action: PayloadAction<number[][]>) => {
+            state.TemporaryDiableList = action.payload[0]
+            state.InnerCirclesList = action.payload[1]
+            state.ColumnCollection = action.payload[2]
+        },
+
+        setHighLightsFromServer: (state, action: PayloadAction<boolean[]>) => {
+            state.HighLightList = action.payload
+        },
+
         removeColumn: (state) => {
             if (state.ColumnCollection.length <= 1) {
                 return;
@@ -212,7 +224,7 @@ export const DotSlice = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const { draggFromServer, HighLightEvent, changeTokensInColumn
+export const { setHighLightsFromServer, setListsFromServer, draggFromServer, HighLightEvent, changeTokensInColumn
     , setColumnLengthTo
     , clearAllStateInTheReduxState,
     temporaryDisable,

@@ -1,0 +1,131 @@
+.room-id{
+    display: flex;
+    justify-content: center;
+    font-size: xx-large;
+    font-weight: bolder;
+    font-family: cursive;
+    background-color: #eff8fc96; 
+    color: #6633998a;
+    margin-top:-8px;
+
+}
+
+.access-control-div{
+    background-color: #eff8fc96;
+    font-size: medium;
+    font-family: cursive;
+    font-weight: lighter;
+}
+.access-control-div>input{
+    width:70px;
+}
+.access-control-div>input[type=checkbox]
+{
+  /* Double-sized Checkboxes */
+  -ms-transform: scale(1.6); /* IE */
+  -moz-transform: scale(1.6); /* FF */
+  -webkit-transform: scale(1.6); /* Safari and Chrome */
+  -o-transform: scale(1.6); /* Opera */
+  transform: scale(1.6);
+}
+
+.saveState{
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    margin-bottom:40px;
+}
+.saveState>input{
+    width: 319px;
+    height: 28px;
+    border: none;
+    background-color: whitesmoke;
+}
+.saveState>button{
+    margin-left: 13px;
+    width: 70px;
+    border: none;
+}
+
+
+.create-room-page>button,.join-as-screen>button{
+    height: 51px;
+    width: 292px;
+    font-family: cursive;
+    font-size: large;
+    border: none;
+    color: #505050;
+    margin-bottom:55px;
+}
+.create-room-page,.join-as-screen{
+    display: grid; 
+    flex-direction: column;
+    /* position: absolute; */
+    top: 50%;
+    left: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 620px;
+    margin: 0 auto;
+}
+
+
+.join-as-student>button{
+    border: none;
+    height: 50px;
+    width: 105px;
+    margin-left: 20px;
+}
+
+.join-as-student{
+    margin: 323px auto;
+}
+.join-as-student>input{
+    background-color: whitesmoke;
+    border: none;
+    height: 50px;
+    width: 437px;
+    padding-left: 15px;
+    font-size: inherit;
+}
+
+.outer-div-join-as-teacher{
+    display: flex;
+    margin: 0 auto;
+    height: 600px;
+    align-items: center;
+}
+
+.inner-div-join-as-teacher{
+    display: grid;
+    justify-content: center;
+    align-items: center;
+
+}
+.btns-join-as-teacher{
+    display: flex;
+    justify-content: center;
+}
+.btns-join-as-teacher>button{
+    height: 65px;
+    width: 472px;
+    border: none;
+    font-size: x-large;
+    color: #000000b5;
+}
+
+.input-collection-join-as-teacher{
+    display:grid;
+}
+
+.input-collection-join-as-teacher>input{
+    border: none;
+    width: 450px;
+    background-color: whitesmoke;
+    margin-bottom: 30px;
+    /* width: 70px; */
+    height: 55px;
+    padding-left: 20px;
+    font-size: initial;
+}
