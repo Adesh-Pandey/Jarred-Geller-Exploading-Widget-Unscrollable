@@ -57,7 +57,7 @@ function Columns({ InnerColumnValue, TotalValueInBaseTen, socket, roomID, Toggle
 }: Props) {
     const POP_ADD_AUDIO_LIST = [PopAddAudio1, PopAddAudio2, PopAddAudio3, PopAddAudio4, PopAddAudio5, PopAddAudio5];
     const POP_ADD_AUDIO_REVERSE_LIST = [PopAddAudioReverse1, PopAddAudioReverse2, PopAddAudioReverse3, PopAddAudioReverse4, PopAddAudioReverse4, PopAddAudioReverse4];
-    const [columnReverse, setcolumnReverse] = useState(true);
+
     const [colorList, setcolorList] = useState(["#D2ABFE", "#ED74B8", "#FF8B1A", "#3CA776", "#107FF0"])
     const Base = useSelector((state: RootState) => state.allState.base)
     const [Visibility, setVisibility] = useState(true)
@@ -65,7 +65,6 @@ function Columns({ InnerColumnValue, TotalValueInBaseTen, socket, roomID, Toggle
     const dispatch = useDispatch()
     const ColumnCollection = useSelector((state: RootState) => state.allState.ColumnCollection)
     const [selected, setselected] = useState(Base > 1 ? String(Base) : "2")
-    const [ShowTokenLabel, setShowTokenLabel] = useState(true)
     const TemporaryDisabledList = useSelector((state: RootState) => state.allState.TemporaryDiableList)
     const SelectRef = useRef<HTMLDivElement>(null)
     const [visibilityList, setvisibilityList] = useState([...Array(ColumnCollection.length)].map(x => true))
@@ -98,9 +97,9 @@ function Columns({ InnerColumnValue, TotalValueInBaseTen, socket, roomID, Toggle
         dispatch(clearAllStateInTheReduxState());
         setvisibilityList([...[...Array(ColumnCollection.length)].map(x => true), true]);
         setstacking([...Array(ColumnCollection.length)].map(x => false));
-        setShowTokenLabel(true);
+        // setShowTokenLabel(true);
         setselected("2");
-        setcolumnReverse(true);
+        // setcolumnReverse(true);
     }
 
 
@@ -141,13 +140,13 @@ function Columns({ InnerColumnValue, TotalValueInBaseTen, socket, roomID, Toggle
             dispatch(HighLightEvent([data.ColumnIndex, data.value ? 0 : 1]))
         })
 
-        socket.on("SHOW_TOKEN_LABEL", (data: boolean) => {
-            setShowTokenLabel(data);
-        })
+        // socket.on("SHOW_TOKEN_LABEL", (data: boolean) => {
+        //     setShowTokenLabel(data);
+        // })
 
-        socket.on("ColumnReverse", (data: boolean) => {
-            setcolumnReverse(data)
-        })
+        // socket.on("ColumnReverse", (data: boolean) => {
+        //     setcolumnReverse(data)
+        // })
 
         socket.on("ADD_COLUMN", (data: number) => {
             dispatch(setColumnLengthTo(data + 1))
@@ -171,12 +170,16 @@ function Columns({ InnerColumnValue, TotalValueInBaseTen, socket, roomID, Toggle
 
 
     return (<div className='main-app-wrapper-container'>
-        <div className='show-label-restart' style={{ fontFamily: "cursive" }}>{ShowTokenLabelButton ? <div style={{ cursor: "default" }}>
-            <input className='show-tokens' type="checkbox" checked={ShowTokenLabel} value={ShowTokenLabel ? 1 : 0} onChange={() => {
-                socket.emit("SHOW_TOKEN_LABEL", { room: roomID, ShowTokenLabel: !ShowTokenLabel })
-                setShowTokenLabel(!ShowTokenLabel);
+        <div className='show-label-restart' style={{ fontFamily: "cursive" }}>
 
-            }} /> Show Token Label</div> : ""} {Restart ? <button type="button" onClick={() => { ClearAllState() }}>Restart</button> : ""}</div>
+            {/* {ShowTokenLabelButton ? <div style={{ cursor: "default" }}>
+                <input className='show-tokens' type="checkbox" checked={ShowTokenLabel} value={ShowTokenLabel ? 1 : 0} onChange={() => {
+                    socket.emit("SHOW_TOKEN_LABEL", { room: roomID, ShowTokenLabel: !ShowTokenLabel })
+                    setShowTokenLabel(!ShowTokenLabel);
+
+                }} /> Show Token Label</div> : ""} */}
+
+            {Restart ? <button type="button" onClick={() => { ClearAllState() }}>Restart</button> : ""}</div>
 
         <div className="choose-conversion">
             <div className="borderless-div">
@@ -196,7 +199,9 @@ function Columns({ InnerColumnValue, TotalValueInBaseTen, socket, roomID, Toggle
                         <MenuItem value="12">1 <ArrowRightAltIcon className='reverse-arrow' />  12</MenuItem>
                     </Select>
                 </div> : ""}
-            </div></div>{ColumnOrderReverse ? <div className="column-order-reverse"> <button type="button" onClick={() => { socket.emit("ColumnReverse", { ColumnReverse: !columnReverse, room: roomID }); setcolumnReverse(!columnReverse) }}> Column Order Reverse</button></div> : ""}
+            </div></div>
+
+        {/* {ColumnOrderReverse ? <div className="column-order-reverse"> <button type="button" onClick={() => { socket.emit("ColumnReverse", { ColumnReverse: !columnReverse, room: roomID }); setcolumnReverse(!columnReverse) }}> Column Order Reverse</button></div> : ""} */}
         <div className="results-and-boxes">
             <div className="parent-column-collection-container">
                 {AddButton ? <button type="button"
@@ -207,7 +212,7 @@ function Columns({ InnerColumnValue, TotalValueInBaseTen, socket, roomID, Toggle
                         }
                     }} className="add-column"><AddIcon className='icon-class' />
                 </button> : ""}
-                <div ref={containerDiv} style={{ flexDirection: columnReverse ? "row-reverse" : "row" }} className="column-collection-container">
+                <div ref={containerDiv} style={{ flexDirection: ColumnOrderReverse ? "row-reverse" : "row" }} className="column-collection-container">
 
                     {Visibility &&
                         ColumnCollection.map((elem, idx) => {
@@ -220,7 +225,7 @@ function Columns({ InnerColumnValue, TotalValueInBaseTen, socket, roomID, Toggle
                                 TokenCountLabel={TokenCountLabel}
                                 AddRemoveToken={AddRemoveToken}
                                 ToggleColumnDisable={ToggleColumnDisable}
-                                PopAddAudioReverse={POP_ADD_AUDIO_REVERSE_LIST[idx]} PopAddAudio={POP_ADD_AUDIO_LIST[idx]} stacking={stacking[idx]} _setstacking={setStackingData} HighLight={HighLightState[idx]} setHighLight={setHighLight} columnReverse={columnReverse} borderColor={colorList[idx % colorList.length]} visibility={TemporaryDisabledList[idx] == -1 ? false : true} ShowTokenLabel={ShowTokenLabel} constrainsRef={containerDiv} order={idx} base={Base} key={idx}
+                                PopAddAudioReverse={POP_ADD_AUDIO_REVERSE_LIST[idx]} PopAddAudio={POP_ADD_AUDIO_LIST[idx]} stacking={stacking[idx]} _setstacking={setStackingData} HighLight={HighLightState[idx]} setHighLight={setHighLight} columnReverse={ColumnOrderReverse} borderColor={colorList[idx % colorList.length]} visibility={TemporaryDisabledList[idx] == -1 ? false : true} ShowTokenLabel={ShowTokenLabelButton} constrainsRef={containerDiv} order={idx} base={Base} key={idx}
 
                             />
                         })

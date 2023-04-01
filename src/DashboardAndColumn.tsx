@@ -75,7 +75,7 @@ function DashboardAndColumn() {
         socket.on("recieveHighlightButton", (data) => {
             setHighlightButton(data.HighlightButton)
         })
-        socket.on("recieveTokenCOuntLabel", (data) => {
+        socket.on("recieveTokenCountLabel", (data) => {
             setTokenCountLabel(data.TokenCountLabel)
         })
         socket.on("recieveToggleColumnDisable", (data) => {
@@ -122,10 +122,14 @@ function DashboardAndColumn() {
 
         })
 
+        socket.on("CREATED_ROOM", (data) => {
+            setstate(data.role)
+        })
+
     }, [socket])
     const joinRoom = () => {
         // console.log(EnterRoomPassword)
-        socket.emit("Join_Room", { room: "7f7ix1izld", RoomPassword: EnterRoomPassword, JoinAs: state });
+        socket.emit("Join_Room", { room: roomID, RoomPassword: EnterRoomPassword, JoinAs: state });
 
     }
 
@@ -151,7 +155,7 @@ function DashboardAndColumn() {
                 </div> : ""}
 
                 {state == "CreateRoom" ? <div className='join-as-student'>
-                    <input type="text" value={roomID} onChange={(e) => { setroomID(e.target.value) }} placeholder='Enter The Room ID' /> <button onClick={(e) => { joinRoom() }}>Join</button>
+                    <input type="text" value={roomID} onChange={(e) => { setroomID(e.target.value) }} placeholder='Enter The Room ID' /> <button onClick={(e) => { joinRoom() }}>Create</button>
                     <button onClick={() => { setroomID(stringGen(15)) }}>Random Room ID</button></div> : ""}
 
                 {state == "JoinAS" ? <div >  <div className='join-as-screen'>
