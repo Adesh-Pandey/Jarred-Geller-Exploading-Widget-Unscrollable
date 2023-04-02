@@ -249,13 +249,13 @@ function ColumnComponent({
         if (count == 1) {
             return ShowTokenLabel ? base ** order || 1 : "";
         }
-        let sendValue;
-        if (stacking) {
-            return ShowTokenLabel ? base ** order || 1 : ""
-        } else {
-            sendValue = `x${count}`;
-        }
-        return sendValue;
+        // let sendValue;
+        // if (stacking) {
+        return ShowTokenLabel ? base ** order || 1 : ""
+        // } else {
+        // sendValue = `x${count}`;
+        // }
+        // return sendValue;
     }
 
     const whatToDisplayInsideDummyDivToken = (idx: number) => {
@@ -276,7 +276,7 @@ function ColumnComponent({
             return ShowTokenLabel ? base ** order || 1 : "";
         }
 
-        return `x${count}`;
+        return `${count}`;
     }
 
 
@@ -468,7 +468,7 @@ function ColumnComponent({
                 {tokensWhileHover == -1 || tokensWhileHover == 0 ? "" : <motion.div
                     id={`${order}`}
                     style={{ height: "233px" }}
-
+                    // while
                     className='column-individual-inner-circle-collection-inner-div'>
 
                     {/* {base ** order || 1} */}
@@ -494,7 +494,7 @@ function ColumnComponent({
                             key={idx}
                             style={{ backgroundColor: `${borderColor}` }}
                             className="inner-circle">
-                            {idx < 14 ? (ShowTokenLabel ? base ** order || 1 : "") : whatToDisplayInsideDummyDivToken(idx)}
+                            {(ShowTokenLabel ? base ** order || 1 : "")}
                         </motion.div>
 
                     })}</motion.div>}
@@ -509,7 +509,7 @@ function ColumnComponent({
                     dragConstraints={constrainsRef}
                     dragElastic={0}
                     dragSnapToOrigin={true}
-                    whileDrag={{ position: "absolute", height: "170px" }}
+                    whileDrag={{ position: "absolute", height: "270px", zIndex: "100" }}
                     dragPropagation
                     style={{
                         //  "backgroundColor": "black", 
@@ -581,7 +581,7 @@ function ColumnComponent({
                             variants={{
                                 stack: {
                                     scale: Shakeable && (base <= InnerCircles) ? [0.7, 2, 1] : [0, 1],
-                                    position: "relative", top: `${getPxFromTop(idx)}px`, left: `${((idx % 3) * -37 + extraRight(idx))}px`,
+                                    position: "relative", top: `${getPxFromTop(idx)}px`, left: `${((idx % 3) * -43 + extraRight(idx))}px`,
                                     zIndex: idx,
                                     display: idx > 17 ? "none" : "flex",
                                 },
@@ -599,6 +599,11 @@ function ColumnComponent({
                         </motion.div>
 
                     })}</motion.div>
+
+
+                {InnerCircles - InnerCircleList.length - (tokensWhileHover > 0 ? tokensWhileHover : 0) > 0 ? <div className='some-more-token'> {(InnerCircles - (tokensWhileHover > 0 ? tokensWhileHover : 0) - 15) <= 0 ? "" : `+ ${(InnerCircles - (tokensWhileHover > 0 ? tokensWhileHover : 0) - 15)} More`}</div> : ""}
+
+
                 <div className="overlay">{InnerColumnValue ? base ** order || 1 : " "}{order == 0 && !InnerColumnValue ? 1 : ""}</div>
             </motion.div>
         </div >

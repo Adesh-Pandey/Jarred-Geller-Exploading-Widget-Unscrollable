@@ -1,3 +1,9 @@
+.prevent-select {
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
+}
+
 
 .column-collection-container{
     display:flex;
@@ -28,7 +34,7 @@
 .add-column,.remove-column{
   background-color: #95959514;
     border: none;
-  height: 240px;
+  height: 275px;
   margin-top: 2rem;
   min-width:3.5rem;
   cursor:pointer;
@@ -88,12 +94,13 @@
     flex-direction:column;
     height:inherit;
     background-color:#95959514;
-    height:233px;
-    min-width:140px;
+    height:270px;
+    min-width:155px;
     /* border: 3px solid #eda4ef; */
     border-radius:5px;
     margin-right: 5px;
     margin-left: 5px;
+    justify-content:end;
 }
 
 
@@ -209,11 +216,11 @@ input.show-tokens{
   display: grid;
 
   grid-auto-flow: row;
-  grid-template-columns: repeat( 3,45px);
+  grid-template-columns: repeat( 3,51px);
   grid-template-rows: repeat( 4,45px);
     /* position:absolute; */
-  margin-bottom: -1.3rem;
-    
+  /* margin-bottom: -1.3rem; */
+  margin-left: 0.13rem;
   cursor:grabbing;
 }
 #from{
@@ -222,8 +229,8 @@ input.show-tokens{
 }
 
 .overlay{
-  /* height: 233px; */
-  width: 140px;
+  /* height: 270px; */
+  width: 155px;
   position: relative;
   display: flex;
   align-items: center;
@@ -240,11 +247,17 @@ input.show-tokens{
   justify-content: center;
 }
 
+.some-more-token{
+  
+  display: flex;
+  justify-content: center;
+  font-family:cursive;
 
+}
 .token-control{
   position: relative;
   top: -13px;
-  left: 37px;
+  left: 46px;
   width: fit-content;
   z-index:2;
 }
@@ -273,7 +286,7 @@ ul>li>svg{
 
 .count-tokens,.net-value-column{
   margin-left: 2px;
-  min-width:140px;
+  min-width:155px;
   display: flex;
   justify-content: space-around;
   margin-bottom: 10px;

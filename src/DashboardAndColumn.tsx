@@ -18,6 +18,7 @@ function stringGen(len: number) {
 }
 
 const socket = io("https://synthesis-widget-backend.onrender.com")
+// const socket = io("http://localhost:3000/")
 
 
 function DashboardAndColumn() {
@@ -134,7 +135,7 @@ function DashboardAndColumn() {
     }
 
     return (
-        <div>
+        <div className='prevent-select'>
             {state == "teacher" || state == "Student" ? <div className='room-id'>Room ID: {" "}{roomID}</div> : ""}
             <div style={{ display: "grid", gridAutoFlow: "column" }}>
 
