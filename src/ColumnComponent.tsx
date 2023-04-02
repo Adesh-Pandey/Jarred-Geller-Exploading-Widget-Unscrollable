@@ -467,7 +467,8 @@ function ColumnComponent({
             } : { backgroundColor: notEnoughTokens ? errorColor : "whitesmoke", border: `3px solid ${borderColor}` }} variants={variant} animate={visibility ? "open" : "closed"} id={`${order}`} className='column-individual-inner-circle-collection'>
                 {tokensWhileHover == -1 || tokensWhileHover == 0 ? "" : <motion.div
                     id={`${order}`}
-                    style={{ height: "200px" }}
+                    style={{ height: "233px" }}
+
                     className='column-individual-inner-circle-collection-inner-div'>
 
                     {/* {base ** order || 1} */}
@@ -508,11 +509,11 @@ function ColumnComponent({
                     dragConstraints={constrainsRef}
                     dragElastic={0}
                     dragSnapToOrigin={true}
-                    whileDrag={{ position: "absolute", height: "110px" }}
+                    whileDrag={{ position: "absolute", height: "170px" }}
                     dragPropagation
                     style={{
                         //  "backgroundColor": "black", 
-                        height: "200px", "overflow": "hidden"
+                        height: "233px", "overflow": "hidden"
                     }}
                     onDragEnd={
                         (event, info) => {
@@ -580,7 +581,7 @@ function ColumnComponent({
                             variants={{
                                 stack: {
                                     scale: Shakeable && (base <= InnerCircles) ? [0.7, 2, 1] : [0, 1],
-                                    position: "relative", top: `${getPxFromTop(idx)}px`, left: `${((idx % 3) * -35 + extraRight(idx))}px`,
+                                    position: "relative", top: `${getPxFromTop(idx)}px`, left: `${((idx % 3) * -37 + extraRight(idx))}px`,
                                     zIndex: idx,
                                     display: idx > 17 ? "none" : "flex",
                                 },

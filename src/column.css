@@ -35,9 +35,11 @@
 }
 .add-column{
   margin-right:1rem;
+  margin-top:3rem;
 }
 .remove-column{
   margin-left:1rem;
+  margin-top:3rem;
 }
 .result{
   font-size:xx-large;
@@ -67,8 +69,8 @@
 
 .inner-circle{
     /* background-color:#eda4ef; */
-  height: 30px;
-  width: 30px;
+  height: 37px;
+  width: 37px;
   border-radius: 20px;
   z-index:1;
   margin: 3px;
@@ -86,8 +88,8 @@
     flex-direction:column;
     height:inherit;
     background-color:#95959514;
-    height:200px;
-    min-width:120px;
+    height:233px;
+    min-width:140px;
     /* border: 3px solid #eda4ef; */
     border-radius:5px;
     margin-right: 5px;
@@ -207,8 +209,8 @@ input.show-tokens{
   display: grid;
 
   grid-auto-flow: row;
-  grid-template-columns: repeat( 3,40px);
-  grid-template-rows: repeat( 4,40px);
+  grid-template-columns: repeat( 3,45px);
+  grid-template-rows: repeat( 4,45px);
     /* position:absolute; */
   margin-bottom: -1.3rem;
     
@@ -220,8 +222,8 @@ input.show-tokens{
 }
 
 .overlay{
-  /* height: 200px; */
-  width: 120px;
+  /* height: 233px; */
+  width: 140px;
   position: relative;
   display: flex;
   align-items: center;
@@ -242,7 +244,7 @@ input.show-tokens{
 .token-control{
   position: relative;
   top: -13px;
-  left: 29px;
+  left: 37px;
   width: fit-content;
   z-index:2;
 }
@@ -251,7 +253,7 @@ input.show-tokens{
   padding: 2px 8px;
   background-color:#f0f0f0;
   font-weight: bold;
-  border:1px solid black;
+  border:1px solid #00000029;
 }
 .end-button-right{
   border-top-right-radius: 6px;
@@ -271,7 +273,7 @@ ul>li>svg{
 
 .count-tokens,.net-value-column{
   margin-left: 2px;
-  min-width:120px;
+  min-width:140px;
   display: flex;
   justify-content: space-around;
   margin-bottom: 10px;

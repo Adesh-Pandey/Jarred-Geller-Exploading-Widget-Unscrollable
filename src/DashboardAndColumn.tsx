@@ -17,7 +17,7 @@ function stringGen(len: number) {
     return text;
 }
 
-const socket = io("http://localhost:3000/")
+const socket = io("https://synthesis-widget-backend.onrender.com")
 
 
 function DashboardAndColumn() {
