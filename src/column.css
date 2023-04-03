@@ -89,6 +89,17 @@
   box-shadow:1px 2px 2px 1px #50404e4f;
   
 }
+
+/* .blink-success{
+  font-weight: 700;
+  font-size: large;
+  color:green; */
+/* } */
+.blink-red{
+  color:red;
+  font-weight:600;
+}
+
 .column-individual-inner-circle-collection{
     display:flex;
     flex-direction:column;
@@ -235,6 +246,7 @@ input.show-tokens{
   position: relative;
   display: flex;
   align-items: center;
+  font-size:x-large;
   /* margin-top: 9%; */
   color: #cccccc;
   font-family: cursive;
@@ -249,7 +261,7 @@ input.show-tokens{
 }
 
 .some-more-token{
-  
+  height: 10px;
   display: flex;
   justify-content: center;
   font-family:cursive;
@@ -405,4 +417,43 @@ ul>li>svg{
     font-size: large;
     color: #aba8a8;
 
+  }
+
+
+  .blink-D2ABFE{
+  
+  font-weight: 700;
+  font-size: large;
+  color:#D2ABFE;
+  }
+  
+  .blink-ED74B8{
+    font-weight: 700;
+  font-size: large;
+    color:#ED74B8;
+  }
+  .blink-FF8B1A{
+    font-weight: 700;
+  font-size: large;
+    color:#FF8B1A;
+  }
+  .blink-3CA776{
+    font-weight: 700;
+  font-size: large;
+    color:#3CA776;
+  }
+  .blink-107FF0{
+    font-weight: 700;
+  font-size: large;
+    color:#107FF0;
+  }
+  .blink-EDC631E3{
+    font-weight: 700;
+    font-size: large;
+      color:#edc631e3; 
+  }
+  
+  .base-label{
+    font-size:xxx-large;
+    color:#00000096;
   }

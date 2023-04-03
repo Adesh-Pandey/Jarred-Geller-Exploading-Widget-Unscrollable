@@ -58,7 +58,7 @@ function Columns({ InnerColumnValue, TotalValueInBaseTen, socket, roomID, Toggle
     const POP_ADD_AUDIO_LIST = [PopAddAudio1, PopAddAudio2, PopAddAudio3, PopAddAudio4, PopAddAudio5, PopAddAudio5];
     const POP_ADD_AUDIO_REVERSE_LIST = [PopAddAudioReverse1, PopAddAudioReverse2, PopAddAudioReverse3, PopAddAudioReverse4, PopAddAudioReverse4, PopAddAudioReverse4];
 
-    const [colorList, setcolorList] = useState(["#D2ABFE", "#ED74B8", "#FF8B1A", "#3CA776", "#107FF0"])
+    const [colorList, setcolorList] = useState(["#D2ABFE", "#ED74B8", "#FF8B1A", "#3CA776", "#107FF0", "#EDC631E3"])
     const Base = useSelector((state: RootState) => state.allState.base)
     const [Visibility, setVisibility] = useState(true)
     const containerDiv = useRef<HTMLDivElement>(null);
@@ -140,13 +140,7 @@ function Columns({ InnerColumnValue, TotalValueInBaseTen, socket, roomID, Toggle
             dispatch(HighLightEvent([data.ColumnIndex, data.value ? 0 : 1]))
         })
 
-        // socket.on("SHOW_TOKEN_LABEL", (data: boolean) => {
-        //     setShowTokenLabel(data);
-        // })
 
-        // socket.on("ColumnReverse", (data: boolean) => {
-        //     setcolumnReverse(data)
-        // })
 
         socket.on("ADD_COLUMN", (data: number) => {
             dispatch(setColumnLengthTo(data + 1))
@@ -172,14 +166,11 @@ function Columns({ InnerColumnValue, TotalValueInBaseTen, socket, roomID, Toggle
     return (<div className='main-app-wrapper-container'>
         <div className='show-label-restart' style={{ fontFamily: "cursive" }}>
 
-            {/* {ShowTokenLabelButton ? <div style={{ cursor: "default" }}>
-                <input className='show-tokens' type="checkbox" checked={ShowTokenLabel} value={ShowTokenLabel ? 1 : 0} onChange={() => {
-                    socket.emit("SHOW_TOKEN_LABEL", { room: roomID, ShowTokenLabel: !ShowTokenLabel })
-                    setShowTokenLabel(!ShowTokenLabel);
+            {Restart ? <button type="button" onClick={() => { ClearAllState() }}>Restart</button> : ""}
 
-                }} /> Show Token Label</div> : ""} */}
+            <div className='base-label'>Base {Base}</div>
 
-            {Restart ? <button type="button" onClick={() => { ClearAllState() }}>Restart</button> : ""}</div>
+        </div>
 
         <div className="choose-conversion">
             <div className="borderless-div">

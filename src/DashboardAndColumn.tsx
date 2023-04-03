@@ -3,13 +3,10 @@ import Columns from './Columns'
 import { io } from 'socket.io-client';
 import { RootState } from './redux/store';
 import { useDispatch, useSelector } from 'react-redux';
-import axios from 'axios';
 import { changeBase, setHighLightsFromServer, setListsFromServer } from './redux/mouseSlice';
 import "./DashboardAndColumn.css"
-import { Select } from '@mui/material';
+import Select from '@material-ui/core/Select';
 import { MenuItem } from '@material-ui/core';
-
-import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 
 function stringGen(len: number) {
     var text = "";
@@ -21,14 +18,40 @@ function stringGen(len: number) {
     return text;
 }
 
-// const socket = io("https://synthesis-widget-backend.onrender.com")
-const socket = io("http://localhost:3000/")
+const socket = io("https://synthesis-widget-backend.onrender.com")
+// const socket = io("http://localhost:3000/")
+
+
+interface StatesOfRoom {
+
+    RoomPassword: String,
+    room: String,
+    ColumnCollection: number[],
+    InnerCirclesList: number[],
+    TemporaryDisabledList: number[],
+    HighLightState: boolean[],
+    Base: number,
+    AddButton: boolean,
+    RemoveButton: boolean,
+    HighlightButton: boolean,
+    TokenCountLabel: boolean,
+    ToggleColumnDisable: boolean,
+    AddRemoveToken: boolean,
+    ChangeBase: boolean,
+    Restart: boolean,
+    ColumnOrderReverse: boolean,
+    ShowTokenLabelButton: boolean,
+    ColumnTotalValue: boolean,
+    TotalValueInBaseTen: boolean,
+    InnerColumnValue: boolean
+
+}
 
 
 function DashboardAndColumn() {
 
-    const [initialState, setinitialState] = useState([]);
-    const [initialStateIndex, setinitialStateIndex] = useState("0");
+    const [initialState, setinitialState] = useState<StatesOfRoom[]>([]);
+    const [initialStateIndex, setinitialStateIndex] = useState(0);
 
     const InnerCirclesList = useSelector((state: RootState) => state.allState.InnerCirclesList)
     const ColumnCollection = useSelector((state: RootState) => state.allState.ColumnCollection)
@@ -57,13 +80,63 @@ function DashboardAndColumn() {
     const dispatch = useDispatch();
     const [EnterRoomPassword, setEnterRoomPassword] = useState("")
 
+    const changeInitialStates = (newIndex: number) => {
+        // console.log(initialState)
 
-    const handleInitialStateImport = () => {
+        dispatch(setListsFromServer([initialState[newIndex >= 0 ? newIndex : 0].TemporaryDisabledList, initialState[newIndex >= 0 ? newIndex : 0].InnerCirclesList, initialState[newIndex >= 0 ? newIndex : 0].ColumnCollection]))
+        dispatch(changeBase(initialState[newIndex >= 0 ? newIndex : 0].Base))
+        dispatch(setHighLightsFromServer(initialState[newIndex >= 0 ? newIndex : 0].HighLightState))
+        setColumnTotalValue(initialState[newIndex >= 0 ? newIndex : 0].ColumnTotalValue)
+        setRestart(initialState[newIndex >= 0 ? newIndex : 0].Restart)
+        setShowTokenLabelButton(initialState[newIndex >= 0 ? newIndex : 0].ShowTokenLabelButton)
+        setColumnOrderReverse(initialState[newIndex >= 0 ? newIndex : 0].ColumnOrderReverse)
+        setColumnTotalValue(initialState[newIndex >= 0 ? newIndex : 0].ColumnTotalValue)
+        setInnerColumnValue(initialState[newIndex >= 0 ? newIndex : 0].InnerColumnValue)
+        setTotalValueInBaseTen(initialState[newIndex >= 0 ? newIndex : 0].TotalValueInBaseTen)
+        setTokenCountLabel(initialState[newIndex >= 0 ? newIndex : 0].TokenCountLabel)
+        setChangeBase(initialState[newIndex >= 0 ? newIndex : 0].ChangeBase)
+        setAddRemoveToken(initialState[newIndex >= 0 ? newIndex : 0].AddRemoveToken)
+        setToggleColumnDisable(initialState[newIndex >= 0 ? newIndex : 0].ToggleColumnDisable)
+        setTokenCountLabel(initialState[newIndex >= 0 ? newIndex : 0].TokenCountLabel)
+        setHighlightButton(initialState[newIndex >= 0 ? newIndex : 0].HighlightButton)
+        setRemoveButton(initialState[newIndex >= 0 ? newIndex : 0].RemoveButton)
+        setAddButton(initialState[newIndex >= 0 ? newIndex : 0].AddButton)
+
 
     }
 
+    const handleInitialStateImport = (e: any) => {
+
+        socket.emit("changeInitialStateIndex", { room: roomID, initialStateIndex: e.target.value, initialState: initialState })
+        setinitialStateIndex(e.target.value)
+        changeInitialStates(e.target.value)
+    }
 
     useEffect(() => {
+
+        socket.on("changeInitialStateIndex", (data) => {
+            setinitialStateIndex(data.initialStateIndex);
+
+            dispatch(setListsFromServer([data.initialState[data.initialStateIndex >= 0 ? data.initialStateIndex : 0].TemporaryDisabledList, data.initialState[data.initialStateIndex >= 0 ? data.initialStateIndex : 0].InnerCirclesList, data.initialState[data.initialStateIndex >= 0 ? data.initialStateIndex : 0].ColumnCollection]))
+            dispatch(changeBase(data.initialState[data.initialStateIndex >= 0 ? data.initialStateIndex : 0].Base))
+            dispatch(setHighLightsFromServer(data.initialState[data.initialStateIndex >= 0 ? data.initialStateIndex : 0].HighLightState))
+            setColumnTotalValue(data.initialState[data.initialStateIndex >= 0 ? data.initialStateIndex : 0].ColumnTotalValue)
+            setRestart(data.initialState[data.initialStateIndex >= 0 ? data.initialStateIndex : 0].Restart)
+            setShowTokenLabelButton(data.initialState[data.initialStateIndex >= 0 ? data.initialStateIndex : 0].ShowTokenLabelButton)
+            setColumnOrderReverse(data.initialState[data.initialStateIndex >= 0 ? data.initialStateIndex : 0].ColumnOrderReverse)
+            setColumnTotalValue(data.initialState[data.initialStateIndex >= 0 ? data.initialStateIndex : 0].ColumnTotalValue)
+            setInnerColumnValue(data.initialState[data.initialStateIndex >= 0 ? data.initialStateIndex : 0].InnerColumnValue)
+            setTotalValueInBaseTen(data.initialState[data.initialStateIndex >= 0 ? data.initialStateIndex : 0].TotalValueInBaseTen)
+            setTokenCountLabel(data.initialState[data.initialStateIndex >= 0 ? data.initialStateIndex : 0].TokenCountLabel)
+            setChangeBase(data.initialState[data.initialStateIndex >= 0 ? data.initialStateIndex : 0].ChangeBase)
+            setAddRemoveToken(data.initialState[data.initialStateIndex >= 0 ? data.initialStateIndex : 0].AddRemoveToken)
+            setToggleColumnDisable(data.initialState[data.initialStateIndex >= 0 ? data.initialStateIndex : 0].ToggleColumnDisable)
+            setTokenCountLabel(data.initialState[data.initialStateIndex >= 0 ? data.initialStateIndex : 0].TokenCountLabel)
+            setHighlightButton(data.initialState[data.initialStateIndex >= 0 ? data.initialStateIndex : 0].HighlightButton)
+            setRemoveButton(data.initialState[data.initialStateIndex >= 0 ? data.initialStateIndex : 0].RemoveButton)
+            setAddButton(data.initialState[data.initialStateIndex >= 0 ? data.initialStateIndex : 0].AddButton)
+
+        })
 
         // socket.on("connect", () => { console.log("connected") })
 
@@ -113,25 +186,28 @@ function DashboardAndColumn() {
 
         socket.on("LOAD_THE_STATE", (data) => {
 
+            setinitialState(data.results);
+            console.log(data.results)
             setstate(data.role)
-            dispatch(setListsFromServer([data.TemporaryDisabledList, data.InnerCirclesList, data.ColumnCollection]))
-            dispatch(changeBase(data.Base))
-            dispatch(setHighLightsFromServer(data.HighLightState))
-            setColumnTotalValue(data.ColumnTotalValue)
-            setRestart(data.Restart)
-            setShowTokenLabelButton(data.ShowTokenLabelButton)
-            setColumnOrderReverse(data.ColumnOrderReverse)
-            setColumnTotalValue(data.ColumnTotalValue)
-            setInnerColumnValue(data.InnerColumnValue)
-            setTotalValueInBaseTen(data.TotalValueInBaseTen)
-            setTokenCountLabel(data.TokenCountLabel)
-            setChangeBase(data.ChangeBase)
-            setAddRemoveToken(data.AddRemoveToken)
-            setToggleColumnDisable(data.ToggleColumnDisable)
-            setTokenCountLabel(data.TokenCountLabel)
-            setHighlightButton(data.HighlightButton)
-            setRemoveButton(data.RemoveButton)
-            setAddButton(data.AddButton)
+            setinitialStateIndex(data.initialStateIndex ? data.initialStateIndex : 0)
+            dispatch(setListsFromServer([data.results[data.initialStateIndex > 0 ? data.initialStateIndex : 0].TemporaryDisabledList, data.results[data.initialStateIndex > 0 ? data.initialStateIndex : 0].InnerCirclesList, data.results[data.initialStateIndex > 0 ? data.initialStateIndex : 0].ColumnCollection]))
+            dispatch(changeBase(data.results[data.initialStateIndex > 0 ? data.initialStateIndex : 0].Base))
+            dispatch(setHighLightsFromServer(data.results[data.initialStateIndex > 0 ? data.initialStateIndex : 0].HighLightState))
+            setColumnTotalValue(data.results[data.initialStateIndex > 0 ? data.initialStateIndex : 0].ColumnTotalValue)
+            setRestart(data.results[data.initialStateIndex > 0 ? data.initialStateIndex : 0].Restart)
+            setShowTokenLabelButton(data.results[data.initialStateIndex > 0 ? data.initialStateIndex : 0].ShowTokenLabelButton)
+            setColumnOrderReverse(data.results[data.initialStateIndex > 0 ? data.initialStateIndex : 0].ColumnOrderReverse)
+            setColumnTotalValue(data.results[data.initialStateIndex > 0 ? data.initialStateIndex : 0].ColumnTotalValue)
+            setInnerColumnValue(data.results[data.initialStateIndex > 0 ? data.initialStateIndex : 0].InnerColumnValue)
+            setTotalValueInBaseTen(data.results[data.initialStateIndex > 0 ? data.initialStateIndex : 0].TotalValueInBaseTen)
+            setTokenCountLabel(data.results[data.initialStateIndex > 0 ? data.initialStateIndex : 0].TokenCountLabel)
+            setChangeBase(data.results[data.initialStateIndex > 0 ? data.initialStateIndex : 0].ChangeBase)
+            setAddRemoveToken(data.results[data.initialStateIndex > 0 ? data.initialStateIndex : 0].AddRemoveToken)
+            setToggleColumnDisable(data.results[data.initialStateIndex > 0 ? data.initialStateIndex : 0].ToggleColumnDisable)
+            setTokenCountLabel(data.results[data.initialStateIndex > 0 ? data.initialStateIndex : 0].TokenCountLabel)
+            setHighlightButton(data.results[data.initialStateIndex > 0 ? data.initialStateIndex : 0].HighlightButton)
+            setRemoveButton(data.results[data.initialStateIndex > 0 ? data.initialStateIndex : 0].RemoveButton)
+            setAddButton(data.results[data.initialStateIndex > 0 ? data.initialStateIndex : 0].AddButton)
 
         })
 
@@ -241,10 +317,10 @@ function DashboardAndColumn() {
                 }}
 
             >Save</button> </div> : ""}
+            {state == "teacher" ? <div className='room-state-change'> <Select disableUnderline value={initialStateIndex} onChange={handleInitialStateImport} className='choose-conversion-list-option' name="convert-from" id="from">
+                {initialState.map((x, idx) => { return <MenuItem key={idx} value={`${idx}`}>PASSWORD: {x.RoomPassword} </MenuItem> })}
+            </Select> </div> : ""}
 
-            {/* <Select disableUnderline value={initialStateIndex} onChange={handleInitialStateImport} className='choose-conversion-list-option' name="convert-from" id="from">
-                {initialState.map((x, idx) => { return <MenuItem value={`${idx}`}>  {idx} </MenuItem> })}
-            </Select> */}
         </div>
     )
 }

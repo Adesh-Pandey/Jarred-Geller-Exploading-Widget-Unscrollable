@@ -62,6 +62,9 @@ function ColumnComponent({
     constrainsRef,
     order,
     base }: Props) {
+
+
+    const moreTokensRef = useRef<HTMLDivElement>(null)
     // const [HighLight, setHighLight] = useState(false);
     const EXPLOSION_AUDIO_LIST = [ExplosionOfTwo, ExplosionOfThree, ExplosionOfFour, ExplosionOfFive, ExplosionOfMoreThanFive]
     const MouseDownSource = useSelector((state: RootState) => state.allState.mouseDownSource)
@@ -542,6 +545,12 @@ function ColumnComponent({
                                             MouseUpSourceTokens: InnerCirclesList[or],
                                             mouseUpOnColumn: or
                                         })
+                                        if (or != order) {
+                                            elementsHere[callChanges]?.classList.add(`blink-${borderColor.substring(1)}`)
+                                            setTimeout(() => {
+                                                elementsHere[callChanges]?.classList.remove(`blink-${borderColor.substring(1)}`)
+                                            }, 500);
+                                        }
                                     }
                                 }
                             }
@@ -557,7 +566,9 @@ function ColumnComponent({
                             setstacking(false);
                             settokensWhileHover(-1);
                             setnotEnoughTokens(false);
+                            moreTokensRef.current?.classList.remove("blink-red");
                         }
+
                     }
                     onDragStart={
 
@@ -565,6 +576,7 @@ function ColumnComponent({
                             initiateDragOnDiv(e);
                             setstacking(true)
                             // console.log("started")
+                            moreTokensRef.current?.classList.add("blink-red");
 
                         }
                     }
@@ -600,7 +612,7 @@ function ColumnComponent({
                     })}</motion.div>
 
 
-                <div className='some-more-token' style={{ height: "25px", minWidth: "70px" }}> {(InnerCircles - (tokensWhileHover > 0 ? tokensWhileHover : 0) - 15) <= 0 ? "" : `+ ${(InnerCircles - (tokensWhileHover > 0 ? tokensWhileHover : 0) - 15)} More`}</div>
+                <div ref={moreTokensRef} className='some-more-token' style={{ height: "10px", minWidth: "70px" }}> {(InnerCircles - (tokensWhileHover > 0 ? tokensWhileHover : 0) - 15) <= 0 ? "" : `+ ${(InnerCircles - (tokensWhileHover > 0 ? tokensWhileHover : 0) - 15)} More`}</div>
 
 
                 <div className="overlay">{InnerColumnValue ? base ** order || 1 : order == 0 ? 1 : "_"}</div>
