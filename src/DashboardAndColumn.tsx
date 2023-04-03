@@ -6,6 +6,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import { changeBase, setHighLightsFromServer, setListsFromServer } from './redux/mouseSlice';
 import "./DashboardAndColumn.css"
+import { Select } from '@mui/material';
+import { MenuItem } from '@material-ui/core';
+
+import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 
 function stringGen(len: number) {
     var text = "";
@@ -17,11 +21,14 @@ function stringGen(len: number) {
     return text;
 }
 
-const socket = io("https://synthesis-widget-backend.onrender.com")
-// const socket = io("http://localhost:3000/")
+// const socket = io("https://synthesis-widget-backend.onrender.com")
+const socket = io("http://localhost:3000/")
 
 
 function DashboardAndColumn() {
+
+    const [initialState, setinitialState] = useState([]);
+    const [initialStateIndex, setinitialStateIndex] = useState("0");
 
     const InnerCirclesList = useSelector((state: RootState) => state.allState.InnerCirclesList)
     const ColumnCollection = useSelector((state: RootState) => state.allState.ColumnCollection)
@@ -49,6 +56,11 @@ function DashboardAndColumn() {
     const [InnerColumnValue, setInnerColumnValue] = useState(true)
     const dispatch = useDispatch();
     const [EnterRoomPassword, setEnterRoomPassword] = useState("")
+
+
+    const handleInitialStateImport = () => {
+
+    }
 
 
     useEffect(() => {
@@ -141,7 +153,6 @@ function DashboardAndColumn() {
 
                 {state == "none" ? <div className='create-room-page'>
                     <button onClick={(e) => {
-
                         // setroomID("7f7ix1izld");
                         setstate("CreateRoom");
                         // joinRoom();
@@ -230,6 +241,10 @@ function DashboardAndColumn() {
                 }}
 
             >Save</button> </div> : ""}
+
+            {/* <Select disableUnderline value={initialStateIndex} onChange={handleInitialStateImport} className='choose-conversion-list-option' name="convert-from" id="from">
+                {initialState.map((x, idx) => { return <MenuItem value={`${idx}`}>  {idx} </MenuItem> })}
+            </Select> */}
         </div>
     )
 }

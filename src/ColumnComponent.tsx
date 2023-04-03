@@ -434,7 +434,6 @@ function ColumnComponent({
         return value.toLocaleString()
     }
 
-
     const moveableComp = useRef<HTMLDivElement>(null);
 
     return (<motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.7 }}>
@@ -449,15 +448,15 @@ function ColumnComponent({
                 }}><PushPinIcon style={HighLight ? { color: "#4b4848e6" } : { color: "#aba8a8" }} /></div> : ""}
                 {TokenCountLabel ? <div style={{ color: `${borderColor}` }} className='total-token-count'>{visibility ? InnerCircles : "0"}
                 </div> : ""}
-                <div style={{ marginTop: "4px" }}>
-                    {ToggleColumnDisable ? <label className="switch">
+                {ToggleColumnDisable ? <div style={{ marginTop: "4px" }}>
+                    <label className="switch">
                         <input checked={visibility ? true : false}
                             onChange={() => {
                                 socket.emit("ToggleOnAndOff", { room: roomID, ColumnIndex: order, value: TemporaryDisabledList[order] })
                                 dispatch(temporaryDisable([order, TemporaryDisabledList[order] == -1 ? 1 : -1]));
                             }} type="checkbox" />
                         <span className="slider round"></span>
-                    </label> : ""}</div></div>
+                    </label> </div> : ""}</div>
             <motion.div style={base <= InnerCircles ? {
                 outlineColor: "#ea0000",
                 outlineStyle: "auto",
@@ -601,10 +600,10 @@ function ColumnComponent({
                     })}</motion.div>
 
 
-                {InnerCircles - InnerCircleList.length - (tokensWhileHover > 0 ? tokensWhileHover : 0) > 0 ? <div className='some-more-token'> {(InnerCircles - (tokensWhileHover > 0 ? tokensWhileHover : 0) - 15) <= 0 ? "" : `+ ${(InnerCircles - (tokensWhileHover > 0 ? tokensWhileHover : 0) - 15)} More`}</div> : ""}
+                <div className='some-more-token' style={{ height: "25px", minWidth: "70px" }}> {(InnerCircles - (tokensWhileHover > 0 ? tokensWhileHover : 0) - 15) <= 0 ? "" : `+ ${(InnerCircles - (tokensWhileHover > 0 ? tokensWhileHover : 0) - 15)} More`}</div>
 
 
-                <div className="overlay">{InnerColumnValue ? base ** order || 1 : " "}{order == 0 && !InnerColumnValue ? 1 : ""}</div>
+                <div className="overlay">{InnerColumnValue ? base ** order || 1 : order == 0 ? 1 : "_"}</div>
             </motion.div>
         </div >
         {AddRemoveToken ? <div className="token-control">
@@ -613,7 +612,7 @@ function ColumnComponent({
             <button disabled={TemporaryDisabledList[order] == -1 ? true : false} className='end-button-right' onClick={removeInnerCircle}><RemoveIcon /></button></div > : ""
         }
 
-        {ColumnTotalValue ? <div className="net-value-column"><div style={{ color: `${borderColor}` }} className="axtual-total-value">{visibility ? CommasAccordingToInternationalNumberSystem((base ** order) * InnerCircles) : "0"}</div> <div className="plus">{countAndPlus()}</div></div> : ""}
+        {ColumnTotalValue ? <div className="net-value-column"><div style={{ height: "25px", minWidth: "70px", color: `${borderColor}` }} className="actual-total-value">{visibility ? CommasAccordingToInternationalNumberSystem((base ** order) * InnerCircles) : "0"}</div> <div className="plus">{countAndPlus()}</div></div> : ""}
 
     </motion.div >
 
