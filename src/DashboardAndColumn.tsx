@@ -20,8 +20,6 @@ function stringGen(len: number) {
 
 const socket = io("https://synthesis-widget-backend.onrender.com")
 // const socket = io("http://localhost:3000/")
-
-
 interface StatesOfRoom {
 
     RoomPassword: String,
@@ -50,6 +48,7 @@ interface StatesOfRoom {
 
 function DashboardAndColumn() {
 
+    const [audioAbility, setaudioAbility] = useState(true);
     const [initialState, setinitialState] = useState<StatesOfRoom[]>([]);
     const [initialStateIndex, setinitialStateIndex] = useState(0);
 
@@ -186,8 +185,7 @@ function DashboardAndColumn() {
 
         socket.on("LOAD_THE_STATE", (data) => {
 
-            setinitialState(data.results);
-            console.log(data.results)
+            setinitialState(data.results)
             setstate(data.role)
             setinitialStateIndex(data.initialStateIndex ? data.initialStateIndex : 0)
             dispatch(setListsFromServer([data.results[data.initialStateIndex > 0 ? data.initialStateIndex : 0].TemporaryDisabledList, data.results[data.initialStateIndex > 0 ? data.initialStateIndex : 0].InnerCirclesList, data.results[data.initialStateIndex > 0 ? data.initialStateIndex : 0].ColumnCollection]))
@@ -274,7 +272,9 @@ function DashboardAndColumn() {
                     <div className='access-control-div'><input type="checkbox" onClick={() => { setInnerColumnValue(!InnerColumnValue); socket.emit("InnerColumnValue", { InnerColumnValue: !InnerColumnValue, room: roomID }) }} checked={InnerColumnValue} name="InnerColumnValue" id="InnerColumnValue" />Columns's Each Token Value</div>
 
                 </div> : ""}
-                {state == "teacher" || state == "Student" ? <Columns socket={socket} roomID={roomID} AddButton={state == "teacher" ? true : AddButton}
+                {state == "teacher" || state == "Student" ? <Columns
+                    audioAbility={audioAbility}
+                    socket={socket} roomID={roomID} AddButton={state == "teacher" ? true : AddButton}
                     InnerColumnValue={state == "teacher" ? true : InnerColumnValue}
                     ToggleColumnDisable={state == "teacher" ? true : ToggleColumnDisable}
                     TotalValueInBaseTen={state == "teacher" ? true : TotalValueInBaseTen}
@@ -289,7 +289,7 @@ function DashboardAndColumn() {
                     ColumnTotalValue={state == "teacher" ? true : ColumnTotalValue} /> : ""}
 
             </div>
-            {state == "teacher" ? <div className="saveState">  <input value={roomPassword} onChange={(e) => { setroomPassword(e.target.value) }} type="text" placeholder='Enter Room Password' /> <button
+            {state == "teacher" ? <div className="saveState">  <div><input value={roomPassword} onChange={(e) => { setroomPassword(e.target.value) }} type="text" placeholder='Enter Room Password' /> <button
                 onClick={() => {
 
                     socket.emit("SAVE_STATES", {
@@ -316,8 +316,19 @@ function DashboardAndColumn() {
                     })
                 }}
 
-            >Save</button> </div> : ""}
-            {state == "teacher" ? <div className='room-state-change'> <Select disableUnderline value={initialStateIndex} onChange={handleInitialStateImport} className='choose-conversion-list-option' name="convert-from" id="from">
+            >Save</button></div>  <div style={{
+                fontWeight: "bolder",
+                marginTop: "4px",
+                fontFamily: "sans-serif"
+            }}>
+                    Audio {" "}<label className="switch">
+                        <input checked={audioAbility ? true : false}
+                            onChange={() => {
+                                setaudioAbility(!audioAbility)
+                            }} type="checkbox" />
+                        <span className="slider round"></span>
+                    </label> </div> </div> : ""}
+            {state == "teacher" ? <div className='room-state-change'> <Select disableUnderline value={initialStateIndex ? String(initialStateIndex) : "0"} onChange={handleInitialStateImport} className='choose-conversion-list-option' name="convert-from" id="from">
                 {initialState.map((x, idx) => { return <MenuItem key={idx} value={`${idx}`}>PASSWORD: {x.RoomPassword} </MenuItem> })}
             </Select> </div> : ""}
 

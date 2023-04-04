@@ -10,6 +10,13 @@
 
 }
 
+input{
+    font-family:cursive;
+}
+button{
+    font-family:monospace;
+}
+
 .access-control-div{
     background-color: #eff8fc96;
     font-size: medium;
@@ -32,19 +39,20 @@
 .saveState{
     margin-top: 10px;
     display: flex;
-    justify-content: center;
+    justify-content: space-around;
     margin-bottom:40px;
 }
-.saveState>input{
+.saveState>div>input{
     width: 319px;
     height: 28px;
     border: none;
     background-color: whitesmoke;
 }
-.saveState>button{
+.saveState>div>button{
     margin-left: 13px;
     width: 70px;
     border: none;
+    height:30px;
 }
 
 

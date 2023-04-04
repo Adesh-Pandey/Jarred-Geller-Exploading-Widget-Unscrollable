@@ -25,6 +25,7 @@ import PopAddAudioReverse5 from "./audios/S08_Pop_Reverse_04.mp3";
 
 
 interface Props {
+    audioAbility: boolean,
     socket: any,
     roomID: string,
     AddButton: boolean,
@@ -43,7 +44,7 @@ interface Props {
 }
 
 
-function Columns({ InnerColumnValue, TotalValueInBaseTen, socket, roomID, ToggleColumnDisable,
+function Columns({ audioAbility, InnerColumnValue, TotalValueInBaseTen, socket, roomID, ToggleColumnDisable,
     AddButton,
     RemoveButton,
     HighLightButton,
@@ -208,6 +209,7 @@ function Columns({ InnerColumnValue, TotalValueInBaseTen, socket, roomID, Toggle
                     {Visibility &&
                         ColumnCollection.map((elem, idx) => {
                             return <ColumnComponent
+                                audioAbility={audioAbility}
                                 InnerColumnValue={InnerColumnValue}
                                 socket={socket}
                                 roomID={roomID}

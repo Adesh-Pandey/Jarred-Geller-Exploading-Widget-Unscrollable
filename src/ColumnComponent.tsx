@@ -21,6 +21,7 @@ import ExtentionAbove3 from "./audios/S04_Extension_more_3pts_01.mp3"
 import DissmissAudio from "./audios/S05_Fast_Movement_Alt_04.mp3"
 
 interface Props {
+    audioAbility: boolean,
     socket: any,
     roomID: string,
     stacking: boolean,
@@ -44,7 +45,7 @@ interface Props {
     InnerColumnValue: boolean,
 }
 
-function ColumnComponent({
+function ColumnComponent({ audioAbility,
     InnerColumnValue,
     roomID,
     socket,
@@ -93,12 +94,12 @@ function ColumnComponent({
     useEffect(() => {
         socket.on("CHANGE_IN_COLUMN_TOKEN_ADD", (data: any) => {
             let playPopAudio: any[] = [new Audio(PopAddAudio)];
-            playPopAudio[0].play();
+            audioAbility ? playPopAudio[0].play() : "";
 
             setTimeout(() => {
                 let playPopAudio: any[] = [new Audio(PopAddAudioReverse)];
                 // let playPopAudio: any[] = [new Audio(PopAddAudio)];
-                playPopAudio[0].play();
+                audioAbility ? playPopAudio[0].play() : "";
             }, 100);
             dispatch(changeTokensInColumn([data.ColumnIndex, data.InnerCircles]))
             // console.log(data)
@@ -106,11 +107,11 @@ function ColumnComponent({
 
         socket.on("CHANGE_IN_COLUMN_TOKEN_SUBTRACT", (data: any) => {
             let playPopAudio: any[] = [new Audio(PopAddAudioReverse)];
-            playPopAudio[0].play();
+            audioAbility ? playPopAudio[0].play() : "";
 
             setTimeout(() => {
                 let playPopAudio: any[] = [new Audio(PopAddAudio)];
-                playPopAudio[0].play();
+                audioAbility ? playPopAudio[0].play() : "";
             }, 100);
 
             dispatch(changeTokensInColumn([data.ColumnIndex, data.InnerCircles]))
@@ -144,12 +145,12 @@ function ColumnComponent({
         socket.emit("changeInColumnToken", { type: "add", room: roomID, ColumnIndex: order, InnerCircles: InnerCircles + 1 })
 
         let playPopAudio: any[] = [new Audio(PopAddAudio)];
-        playPopAudio[0].play();
+        audioAbility ? playPopAudio[0].play() : "";
 
         setTimeout(() => {
             let playPopAudio: any[] = [new Audio(PopAddAudioReverse)];
             // let playPopAudio: any[] = [new Audio(PopAddAudio)];
-            playPopAudio[0].play();
+            audioAbility ? playPopAudio[0].play() : "";
         }, 100);
 
         dispatch(addTokenInColumn(order))
@@ -159,11 +160,11 @@ function ColumnComponent({
         if (InnerCircles == 0) { return }
         socket.emit("changeInColumnToken", { type: "subtract", room: roomID, ColumnIndex: order, InnerCircles: InnerCircles - 1 })
         let playPopAudio: any[] = [new Audio(PopAddAudioReverse)];
-        playPopAudio[0].play();
+        audioAbility ? playPopAudio[0].play() : "";
 
         setTimeout(() => {
             let playPopAudio: any[] = [new Audio(PopAddAudio)];
-            playPopAudio[0].play();
+            audioAbility ? playPopAudio[0].play() : "";
         }, 100);
 
 
@@ -185,7 +186,7 @@ function ColumnComponent({
             if (change > 1) {
                 let playExploadingAudio: any[] = [new Audio(EXPLOSION_AUDIO_LIST[change - 2])]
 
-                playExploadingAudio[0].play()
+                audioAbility ? playExploadingAudio[0].play() : ""
             }
             if (change < -1) {
                 let playExtentionAudio: any[] = [new Audio(ExtentionTo3)];
@@ -193,7 +194,7 @@ function ColumnComponent({
                     playExtentionAudio.pop()
                     playExtentionAudio.push(new Audio(ExtentionAbove3))
                 }
-                playExtentionAudio[0].play()
+                audioAbility ? playExtentionAudio[0].play() : ""
             }
             setoldCOunt(InnerCircles)
 
@@ -406,7 +407,7 @@ function ColumnComponent({
                 setnotEnoughTokens(true);
                 let playErrorAudio: any[] = [new Audio(ErrorAudio)]
                 playErrorAudio[0].volume = 0.02;
-                playErrorAudio[0].play()
+                audioAbility ? playErrorAudio[0].play() : ""
             } else
                 // setInnerCircleListDummyDiv([...Array(InnerCircles > 15 ? 15 : InnerCircles)])            
                 if (count == 0) {
@@ -545,7 +546,7 @@ function ColumnComponent({
                                             MouseUpSourceTokens: InnerCirclesList[or],
                                             mouseUpOnColumn: or
                                         })
-                                        if (or != order) {
+                                        if (or != order && InnerCircles >= (base ** (or - order))) {
                                             elementsHere[callChanges]?.classList.add(`blink-${borderColor.substring(1)}`)
                                             setTimeout(() => {
                                                 elementsHere[callChanges]?.classList.remove(`blink-${borderColor.substring(1)}`)
@@ -557,7 +558,7 @@ function ColumnComponent({
 
                             if (tokensWhileHover != -1 && tokensWhileHover > InnerCircles) {
                                 let playDismissAudio: any[] = [new Audio(DissmissAudio)]
-                                playDismissAudio[0].play()
+                                audioAbility ? playDismissAudio[0].play() : ""
                             }
 
                             setInnerCircleList([...Array(InnerCircles > 15 ? 15 : InnerCircles)])
@@ -624,7 +625,7 @@ function ColumnComponent({
             <button disabled={TemporaryDisabledList[order] == -1 ? true : false} className='end-button-right' onClick={removeInnerCircle}><RemoveIcon /></button></div > : ""
         }
 
-        {ColumnTotalValue ? <div className="net-value-column"><div style={{ height: "25px", minWidth: "70px", color: `${borderColor}` }} className="actual-total-value">{visibility ? CommasAccordingToInternationalNumberSystem((base ** order) * InnerCircles) : "0"}</div> <div className="plus">{countAndPlus()}</div></div> : ""}
+        {ColumnTotalValue ? <div className="net-value-column"><div style={{ minWidth: "70px", color: `${borderColor}` }} className="actual-total-value">{visibility ? CommasAccordingToInternationalNumberSystem((base ** order) * InnerCircles) : "0"}</div> <div className="plus">{countAndPlus()}</div></div> : ""}
 
     </motion.div >
 

@@ -131,6 +131,7 @@
     margin: 40px 20px;
 }
 .show-label-restart>button,.column-order-reverse>button{
+  font-family:sans-serif;
     padding:8px 10px;   
     background-color:white;
     border: 2px solid rgb(182 182 182);
@@ -240,6 +241,10 @@ input.show-tokens{
   font-family:cursive;
 }
 
+.actual-total-value{
+  font-size:x-large;
+  font-weight:800;
+}
 .overlay{
   /* height: 270px; */
   width: 155px;
@@ -274,6 +279,8 @@ input.show-tokens{
   width: fit-content;
   z-index:2;
 }
+
+
 .token-control>button{
   cursor:pointer;
   padding: 2px 8px;
