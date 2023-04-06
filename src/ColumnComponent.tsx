@@ -75,6 +75,7 @@ function ColumnComponent({ audioAbility,
     const InnerCircles = useSelector((state: RootState) => state.allState.InnerCirclesList[order])
     const InnerCirclesList = useSelector((state: RootState) => state.allState.InnerCirclesList)
 
+    const [stationaryStacking, _setstationaryStacking] = useState(false);
     const audio = useRef<HTMLAudioElement>(null);
     // const [stacking, _setstacking] = useState(false)
     const [highLightOrWhite, sethighLightOrWhite] = useState("#95959514");
@@ -82,9 +83,9 @@ function ColumnComponent({ audioAbility,
     const TemporaryDisabledList = useSelector((state: RootState) => state.allState.TemporaryDiableList)
 
     const [tokensWhileHover, settokensWhileHover] = useState(-1)
-    const [InnerCircleList, setInnerCircleList] = useState([...Array(InnerCircles > 15 ? 15 : InnerCircles)])
+    const [InnerCircleList, setInnerCircleList] = useState([...Array(InnerCircles > 45 ? 45 : InnerCircles)])
     const [Shakeable, setShakeable] = useState(false);
-    const [InnerCircleListDummyDiv, setInnerCircleListDummyDiv] = useState([...Array(InnerCircles > 15 ? 15 : InnerCircles)])
+    const [InnerCircleListDummyDiv, setInnerCircleListDummyDiv] = useState([...Array(InnerCircles > 45 ? 45 : InnerCircles)])
 
     const errorColor = "red";
     const [notEnoughTokens, setnotEnoughTokens] = useState(false);
@@ -199,12 +200,17 @@ function ColumnComponent({ audioAbility,
             setoldCOunt(InnerCircles)
 
         }
-
-        setTimeout(() => {
-            setShakeable((base <= InnerCircles));
-            setInnerCircleList([...Array(InnerCircles > 15 ? 15 : InnerCircles)])
-            setInnerCircleListDummyDiv([...Array(InnerCircles > 15 ? 15 : InnerCircles)])
-        }, 70);
+        console.log(stationaryStacking)
+        if (InnerCircles >= 15) {
+            setstationaryStacking(true);
+        } else {
+            setstationaryStacking(false);
+        }
+        // setTimeout(() => {
+        setShakeable((base <= InnerCircles) && InnerCircles <= 15);
+        setInnerCircleList([...Array(InnerCircles > 45 ? 45 : InnerCircles)])
+        setInnerCircleListDummyDiv([...Array(InnerCircles > 45 ? 45 : InnerCircles)])
+        // }, 70);
 
     }, [InnerCircles])
     const initiateDragOnDiv = (e: any) => {
@@ -220,7 +226,7 @@ function ColumnComponent({ audioAbility,
     const variant = {
 
         open: { opacity: 1 },
-        closed: { opacity: "" },
+        closed: { opacity: "0" },
 
     }
     const getPxFromTop = (index: number) => {
@@ -253,35 +259,10 @@ function ColumnComponent({ audioAbility,
         if (count == 1) {
             return ShowTokenLabel ? base ** order || 1 : "";
         }
-        // let sendValue;
-        // if (stacking) {
         return ShowTokenLabel ? base ** order || 1 : ""
-        // } else {
-        // sendValue = `x${count}`;
-        // }
-        // return sendValue;
+
     }
 
-    const whatToDisplayInsideDummyDivToken = (idx: number) => {
-        if (idx != InnerCircleList.length - 1 || InnerCircles - InnerCircleList.length == 0) {
-            return ShowTokenLabel ? base ** order || 1 : ""
-        }
-
-        let count = InnerCircles - InnerCircleListDummyDiv.length + 1;
-
-        if (count == tokensWhileHover + 1) {
-            return ShowTokenLabel ? base ** order || 1 : ""
-        }
-
-        if (tokensWhileHover - count < 0) {
-            count = count - tokensWhileHover;
-        }
-        else if (tokensWhileHover > count) {
-            return ShowTokenLabel ? base ** order || 1 : "";
-        }
-
-        return `${count}`;
-    }
 
 
     const countAndPlus = () => {
@@ -311,6 +292,13 @@ function ColumnComponent({ audioAbility,
         }
         return "normal";
     }
+
+    const stationaryStackingRef = useRef(stationaryStacking);
+    const setstationaryStacking = (data: boolean) => {
+        stationaryStackingRef.current = data;
+        _setstationaryStacking(data)
+    }
+
     const stackingRef = useRef(stacking);
 
     const setstacking = (data: boolean) => {
@@ -400,16 +388,18 @@ function ColumnComponent({ audioAbility,
             setnotEnoughTokens(false);
         }
         if (tokensWhileHover != 0 && tokensWhileHover != -1) {
+            // console.log(tokensWhileHover)
 
             let newList = [...InnerCircleList]
             let count = InnerCircles - InnerCircleList.length;
             if (tokensWhileHover > InnerCircles && getCurrentHoverColumn() != order) {
                 setnotEnoughTokens(true);
+                setInnerCircleListDummyDiv([])
                 let playErrorAudio: any[] = [new Audio(ErrorAudio)]
                 playErrorAudio[0].volume = 0.02;
                 audioAbility ? playErrorAudio[0].play() : ""
             } else
-                // setInnerCircleListDummyDiv([...Array(InnerCircles > 15 ? 15 : InnerCircles)])            
+                // setInnerCircleListDummyDiv([...Array(InnerCircles > 45 ? 45 : InnerCircles)])            
                 if (count == 0) {
                     for (let index = 0; index < tokensWhileHover; index++) {
                         newList.pop()
@@ -436,6 +426,28 @@ function ColumnComponent({ audioAbility,
     const CommasAccordingToInternationalNumberSystem = (value: number) => {
 
         return value.toLocaleString()
+    }
+    const stackingWidthOfEachRow = () => {
+        if (InnerCircles <= 15)
+            return 42
+
+        if (InnerCircles >= 45)
+            return 14
+        return 210 / (Math.ceil(InnerCircles / 3))
+    }
+
+    const stackingPaddingFromTop = () => {
+        if (InnerCircles <= 15)
+            return 1;
+
+        if (InnerCircles >= 45)
+            return 12;
+
+        return Math.ceil((12 / 40) * InnerCircles)
+
+    }
+    const noOfRows = () => {
+        return Math.ceil((InnerCircles > 45 ? 45 : InnerCircles) / 3)
     }
 
     const moveableComp = useRef<HTMLDivElement>(null);
@@ -470,14 +482,17 @@ function ColumnComponent({ audioAbility,
             } : { backgroundColor: notEnoughTokens ? errorColor : "whitesmoke", border: `3px solid ${borderColor}` }} variants={variant} animate={visibility ? "open" : "closed"} id={`${order}`} className='column-individual-inner-circle-collection'>
                 {tokensWhileHover == -1 || tokensWhileHover == 0 ? "" : <motion.div
                     id={`${order}`}
-                    style={{ height: "233px" }}
+                    style={{
+                        height: "233px", overflow: "hidden",
+                        gridTemplateRows: `repeat( ${noOfRows()},${stackingWidthOfEachRow()}px)`
+                    }}
                     // while
-                    className='column-individual-inner-circle-collection-inner-div'>
+                    className='column-individual-inner-circle-collection-inner-div   '>
 
                     {/* {base ** order || 1} */}
                     {InnerCircleListDummyDiv.map((count, idx) => {
 
-                        return <motion.div
+                        return <motion.div className='inner-circle-parent'    ><motion.div
 
                             animate={{ scale: Shakeable && (base <= InnerCircleListDummyDiv.length) ? [0.7, 2, 1] : [0, 1], }}
                             variants={{
@@ -485,20 +500,20 @@ function ColumnComponent({ audioAbility,
                                     scale: Shakeable && (base <= InnerCircles) ? [0.7, 2, 1] : [0, 1],
                                     position: "relative", top: `${getPxFromTop(idx)}px`, left: `${((idx % 3) * -35 + extraRight(idx))}px`,
                                     zIndex: idx,
-                                    display: idx > 17 ? "none" : "flex",
+                                    display: idx > 44 ? "none" : "flex",
                                 },
                                 normal: { scale: Shakeable && (base <= InnerCircleListDummyDiv.length) ? [0.7, 2, 1] : [0, 1], }
                                 , noneDisplay: { opacity: "0" }
                             }}
                             transition={{
                                 type: 'spring', bounce: "0.5"
-                                , repeat: base <= InnerCircleListDummyDiv.length ? Infinity : 0, duration: 1
+                                , repeat: base <= InnerCircleListDummyDiv.length && InnerCircleListDummyDiv.length <= 15 ? Infinity : 0, duration: 1
                             }}
                             key={idx}
                             style={{ backgroundColor: `${borderColor}` }}
                             className="inner-circle">
                             {(ShowTokenLabel ? base ** order || 1 : "")}
-                        </motion.div>
+                        </motion.div></motion.div>
 
                     })}</motion.div>}
                 <motion.div
@@ -516,7 +531,8 @@ function ColumnComponent({ audioAbility,
                     dragPropagation
                     style={{
                         //  "backgroundColor": "black", 
-                        height: "233px", "overflow": "hidden"
+                        height: "233px", "overflow": "hidden", paddingTop: `${stackingPaddingFromTop()}px`
+                        , gridTemplateRows: stacking ? "repeat( 5,42px)" : `repeat( ${noOfRows()},${stackingWidthOfEachRow()}px)`
                     }}
                     onDragEnd={
                         (event, info) => {
@@ -561,8 +577,8 @@ function ColumnComponent({ audioAbility,
                                 audioAbility ? playDismissAudio[0].play() : ""
                             }
 
-                            setInnerCircleList([...Array(InnerCircles > 15 ? 15 : InnerCircles)])
-                            setInnerCircleListDummyDiv([...Array(InnerCircles > 15 ? 15 : InnerCircles)])
+                            setInnerCircleList([...Array(InnerCircles > 45 ? 45 : InnerCircles)])
+                            setInnerCircleListDummyDiv([...Array(InnerCircles > 45 ? 45 : InnerCircles)])
 
                             setstacking(false);
                             settokensWhileHover(-1);
@@ -587,7 +603,10 @@ function ColumnComponent({ audioAbility,
                     {/* {base ** order || 1} */}
                     {InnerCircleList.map((count, idx) => {
 
-                        return <motion.div
+                        return <motion.div className='inner-circle-parent'
+
+                            key={idx}
+                        > <motion.div
 
                             animate={animationType(idx)}
                             variants={{
@@ -595,25 +614,25 @@ function ColumnComponent({ audioAbility,
                                     scale: Shakeable && (base <= InnerCircles) ? [0.7, 2, 1] : [0, 1],
                                     position: "relative", top: `${getPxFromTop(idx)}px`, left: `${((idx % 3) * -43 + extraRight(idx))}px`,
                                     zIndex: idx,
-                                    display: idx > 17 ? "none" : "flex",
+                                    display: idx > 14 ? "none" : "flex",
+                                    // backgroundColor: 'yellow'
                                 },
                                 normal: { scale: Shakeable && (base <= InnerCircles) ? [0.7, 2, 1] : [0, 1], }
                                 , noneDisplay: { opacity: "0" }
                             }}
+
                             transition={{
                                 type: 'spring', bounce: "0.5"
-                                , repeat: base <= InnerCircles && !stacking ? Infinity : 0, duration: 1
+                                , repeat: (base <= InnerCircles && InnerCircles <= 15 && !stacking) ? Infinity : 0, duration: 1
                             }}
-                            key={idx}
                             style={{ backgroundColor: `${borderColor}` }}
                             className="inner-circle">
-                            {idx < 14 ? (ShowTokenLabel ? base ** order || 1 : "") : whatToDisplayInsidetoken(idx)}
-                        </motion.div>
-
+                                {idx < 44 ? (ShowTokenLabel ? base ** order || 1 : "") : whatToDisplayInsidetoken(idx)}
+                            </motion.div></motion.div>
                     })}</motion.div>
 
 
-                <div ref={moreTokensRef} className='some-more-token' style={{ height: "10px", minWidth: "70px" }}> {(InnerCircles - (tokensWhileHover > 0 ? tokensWhileHover : 0) - 15) <= 0 ? "" : `+ ${(InnerCircles - (tokensWhileHover > 0 ? tokensWhileHover : 0) - 15)} More`}</div>
+                <div ref={moreTokensRef} className='some-more-token' style={{ height: "0px", minWidth: "70px" }}> {(InnerCircles - (tokensWhileHover > 0 ? tokensWhileHover : 0) - 45) <= 0 ? "" : `+ ${(InnerCircles - (tokensWhileHover > 0 ? tokensWhileHover : 0) - 45)} More`}</div>
 
 
                 <div className="overlay">{InnerColumnValue ? base ** order || 1 : order == 0 ? 1 : "_"}</div>
