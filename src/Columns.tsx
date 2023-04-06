@@ -59,7 +59,7 @@ function Columns({ audioAbility, InnerColumnValue, TotalValueInBaseTen, socket, 
     const POP_ADD_AUDIO_LIST = [PopAddAudio1, PopAddAudio2, PopAddAudio3, PopAddAudio4, PopAddAudio5, PopAddAudio5];
     const POP_ADD_AUDIO_REVERSE_LIST = [PopAddAudioReverse1, PopAddAudioReverse2, PopAddAudioReverse3, PopAddAudioReverse4, PopAddAudioReverse4, PopAddAudioReverse4];
 
-    const [colorList, setcolorList] = useState(["#D2ABFE", "#ED74B8", "#FF8B1A", "#3CA776", "#107FF0", "#EDC631E3"])
+    const [colorList, setcolorList] = useState(["#107FF0", "#3CA776", "#FF8B1A", "#ED74B8", "#D2ABFE", "#EDC631E3"])
     const Base = useSelector((state: RootState) => state.allState.base)
     const [Visibility, setVisibility] = useState(true)
     const containerDiv = useRef<HTMLDivElement>(null);
@@ -79,7 +79,6 @@ function Columns({ audioAbility, InnerColumnValue, TotalValueInBaseTen, socket, 
         dispatch(changeBase(Number(event.target.value)));
         setselected(event.target.value);
         socket.emit("BASE_CHANGE", { selected: event.target.value, room: roomID })
-
     }
     const totalValue = () => {
         let finalVal = 0;
@@ -155,7 +154,11 @@ function Columns({ audioAbility, InnerColumnValue, TotalValueInBaseTen, socket, 
             dispatch(setColumnLengthTo(data - 1))
         })
         socket.on("clearAllState", () => {
-            ClearAllState();
+            dispatch(clearAllStateInTheReduxState());
+            setvisibilityList([...[...Array(ColumnCollection.length)].map(x => true), true]);
+            setstacking([...Array(ColumnCollection.length)].map(x => false));
+            // setShowTokenLabel(true);
+            setselected("2");
         })
         // socket.on("CHANGE_IN_COLUMN_TOKEN", (data: any) => {
         //     console.log(data)

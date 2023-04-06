@@ -220,7 +220,7 @@ function ColumnComponent({ audioAbility,
     const variant = {
 
         open: { opacity: 1 },
-        closed: { opacity: 0 },
+        closed: { opacity: "" },
 
     }
     const getPxFromTop = (index: number) => {

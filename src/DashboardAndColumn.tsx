@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Columns from './Columns'
 import { io } from 'socket.io-client';
 import { RootState } from './redux/store';
@@ -7,6 +7,8 @@ import { changeBase, setHighLightsFromServer, setListsFromServer } from './redux
 import "./DashboardAndColumn.css"
 import Select from '@material-ui/core/Select';
 import { MenuItem } from '@material-ui/core';
+import ClearIcon from '@mui/icons-material/Clear';
+import PopUp from './PopUp';
 
 function stringGen(len: number) {
     var text = "";
@@ -18,8 +20,8 @@ function stringGen(len: number) {
     return text;
 }
 
-const socket = io("https://synthesis-widget-backend.onrender.com")
-// const socket = io("http://localhost:3000/")
+// const socket = io("https://synthesis-widget-backend.onrender.com")
+const socket = io("http://localhost:3000/")
 interface StatesOfRoom {
 
     RoomPassword: String,
@@ -48,6 +50,7 @@ interface StatesOfRoom {
 
 function DashboardAndColumn() {
 
+    const [popUpVisible, setpopUpVisible] = useState(-1);
     const [audioAbility, setaudioAbility] = useState(true);
     const [initialState, setinitialState] = useState<StatesOfRoom[]>([]);
     const [initialStateIndex, setinitialStateIndex] = useState(0);
@@ -62,7 +65,7 @@ function DashboardAndColumn() {
 
     const [state, setstate] = useState("none");
     const [roomPassword, setroomPassword] = useState("")
-
+    const [openMenu, setopenMenu] = useState(false)
     const [AddButton, setAddButton] = useState(true);
     const [RemoveButton, setRemoveButton] = useState(true)
     const [HighlightButton, setHighlightButton] = useState(true);
@@ -78,6 +81,8 @@ function DashboardAndColumn() {
     const [InnerColumnValue, setInnerColumnValue] = useState(true)
     const dispatch = useDispatch();
     const [EnterRoomPassword, setEnterRoomPassword] = useState("")
+
+    const inputRef = useRef<HTMLDivElement>(null)
 
     const changeInitialStates = (newIndex: number) => {
         // console.log(initialState)
@@ -104,7 +109,15 @@ function DashboardAndColumn() {
 
     }
 
+    const handleMenuOpen = () => {
+        setopenMenu(true);
+    }
+    const handleMenuClose = () => {
+        setopenMenu(false);
+    }
+
     const handleInitialStateImport = (e: any) => {
+
 
         socket.emit("changeInitialStateIndex", { room: roomID, initialStateIndex: e.target.value, initialState: initialState })
         setinitialStateIndex(e.target.value)
@@ -137,6 +150,14 @@ function DashboardAndColumn() {
 
         })
 
+        socket.on("NEW_STATE_CREATED", (data) => {
+            setinitialState(data)
+            // console.log(data);
+            setroomPassword("")
+        })
+        socket.on("STATE_DELETED", (data) => {
+            setinitialState(data);
+        })
         // socket.on("connect", () => { console.log("connected") })
 
         socket.on("recieveColumnTotalValue", (data) => {
@@ -221,9 +242,9 @@ function DashboardAndColumn() {
     }
 
     return (
-        <div className='prevent-select'>
+        <div >
             {state == "teacher" || state == "Student" ? <div className='room-id'>Room ID: {" "}{roomID}</div> : ""}
-            <div style={{ display: "grid", gridAutoFlow: "column" }}>
+            <div className='prevent-select' style={{ display: "grid", gridAutoFlow: "column" }}>
 
                 {state == "none" ? <div className='create-room-page'>
                     <button onClick={(e) => {
@@ -289,7 +310,8 @@ function DashboardAndColumn() {
                     ColumnTotalValue={state == "teacher" ? true : ColumnTotalValue} /> : ""}
 
             </div>
-            {state == "teacher" ? <div className="saveState">  <div><input value={roomPassword} onChange={(e) => { setroomPassword(e.target.value) }} type="text" placeholder='Enter Room Password' /> <button
+            {state == "teacher" && popUpVisible != -1 && <PopUp initialState={initialState} socket={socket} setinitialState={setinitialState} popUpVisible={popUpVisible} setpopUpVisible={setpopUpVisible} />}
+            {state == "teacher" ? <div className="saveState">  <div ref={inputRef}><input value={roomPassword} onChange={(e) => { setroomPassword(e.target.value) }} type="text" placeholder='Enter Room Password' /> <button
                 onClick={() => {
 
                     socket.emit("SAVE_STATES", {
@@ -314,6 +336,18 @@ function DashboardAndColumn() {
                         TotalValueInBaseTen: TotalValueInBaseTen,
                         InnerColumnValue: InnerColumnValue,
                     })
+
+                    const list = inputRef.current?.children;
+                    for (let index = 0; index < 2; index++) {
+                        const element = list ? list[index] : null;
+                        element?.classList.add("blink-green")
+
+                        setTimeout(() => {
+                            element?.classList.remove("blink-green")
+                        }, 200);
+
+                    }
+
                 }}
 
             >Save</button></div>  <div style={{
@@ -328,8 +362,19 @@ function DashboardAndColumn() {
                             }} type="checkbox" />
                         <span className="slider round"></span>
                     </label> </div> </div> : ""}
-            {state == "teacher" ? <div className='room-state-change'> <Select disableUnderline value={initialStateIndex ? String(initialStateIndex) : "0"} onChange={handleInitialStateImport} className='choose-conversion-list-option' name="convert-from" id="from">
-                {initialState.map((x, idx) => { return <MenuItem key={idx} value={`${idx}`}>PASSWORD: {x.RoomPassword} </MenuItem> })}
+            {state == "teacher" ? <div className='room-state-change'> <Select open={openMenu} onOpen={handleMenuOpen}
+                onClose={handleMenuClose} MenuProps={{ onClose: handleMenuClose }} disableUnderline
+                value={initialStateIndex ? String(initialStateIndex) : "0"} onChange={handleInitialStateImport}
+                className='choose-conversion-list-option' name="convert-from" id="from">
+                {initialState.map((x, idx) => {
+                    return <MenuItem key={idx} value={`${idx}`}> <div className='password-list-item'> PASSWORD: {x.RoomPassword} {" "}  {initialStateIndex != idx ? <div onClick={(e) => {
+
+                        e.stopPropagation();
+                        setopenMenu(false);
+                        setpopUpVisible(idx)
+                    }}> <ClearIcon
+                        style={{ color: "red", fontSize: "large", marginTop: "3px" }}></ClearIcon></div> : ""} </div></MenuItem>
+                })}
             </Select> </div> : ""}
 
         </div>

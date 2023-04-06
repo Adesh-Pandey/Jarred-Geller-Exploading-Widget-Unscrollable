@@ -1,0 +1,47 @@
+.popup-wrapper{
+    position:absolute;
+    top:0;
+    height:122%;
+    width:100%;
+    /* background-color:#ff000017; */
+    z-index: 200;
+}
+.popup-container{
+    
+    flex-direction: column;
+    justify-content: space-around;
+    height: 168px;
+    width: 300px;
+    position: absolute;
+    top: 41%;
+    left: 43%;
+    background-color: white;
+    border-radius: 6px;
+    box-shadow: 1px 1px 12px -1px black;
+    display: flex;
+
+}
+
+.warning-delete-state{
+    font-size: larger;
+    font-family: math;
+    padding-left: 37px;
+}
+.yes-delete,.no-delete{
+    border:none;
+    height: 30px;
+    width: 80px;
+    font-weight: 600;
+    font-family:math;
+}
+.yes-delete{
+    background-color: #08ff01ab;
+}
+.no-delete{
+    background-color: #ff2d2d;
+    
+}
+.btn-warning{
+    display: flex;
+    justify-content: space-around;
+}
