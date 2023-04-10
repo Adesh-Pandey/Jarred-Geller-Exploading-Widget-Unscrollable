@@ -49,7 +49,7 @@
 }
 .result{
   font-size:xx-large;
-  font-family:cursive;
+  font-family:monospace;
   display: flex;
   justify-content: flex-end;
 }
@@ -79,7 +79,7 @@
   width: 37px;
   border-radius: 20px;
   z-index:1;
-  font-family: cursive;
+  font-family: monospace;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -237,7 +237,7 @@ input.show-tokens{
 }
 #from{
   padding-bottom:0px;
-  font-family:cursive;
+  font-family:monospace;
 }
 
 .actual-total-value{
@@ -253,7 +253,7 @@ input.show-tokens{
   font-size:x-large;
   /* margin-top: 9%; */
   color: #cccccc;
-  font-family: cursive;
+  font-family: monospace;
   font-weight: bolder;
   z-index:0;
   /* height: 30px; */
@@ -315,6 +315,7 @@ ul>li>svg{
   justify-content: space-around;
   flex-wrap: wrap;
   align-content: center;
+  /* font-size:large; */
 
 }
 
@@ -342,7 +343,7 @@ ul>li>svg{
 
 
 .total-token-count,.net-value-column{
-  font-family:cursive;
+  font-family:monospace;
   cursor: default;
 }
 

@@ -3,7 +3,7 @@
     justify-content: center;
     font-size: xx-large;
     font-weight: bolder;
-    font-family: cursive;
+    font-family: monospace;
     background-color: #eff8fc96; 
     color: #6633998a;
     margin-top:-8px;
@@ -20,7 +20,7 @@
 }
 
 input{
-    font-family:cursive;
+    font-family:monospace;
 }
 button{
     font-family:monospace;
@@ -29,7 +29,7 @@ button{
 .access-control-div{
     background-color: #eff8fc96;
     font-size: medium;
-    font-family: cursive;
+    font-family: monospace;
     font-weight: lighter;
 }
 .access-control-div>input{
@@ -68,7 +68,7 @@ button{
 .create-room-page>button,.join-as-screen>button{
     height: 51px;
     width: 292px;
-    font-family: cursive;
+    font-family: monospace;
     font-size: large;
     border: none;
     color: #505050;
