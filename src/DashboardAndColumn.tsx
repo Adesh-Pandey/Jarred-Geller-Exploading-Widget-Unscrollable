@@ -20,8 +20,8 @@ function stringGen(len: number) {
     return text;
 }
 
-// const socket = io("https://synthesis-widget-backend.onrender.com")
-const socket = io("http://localhost:3000/")
+const socket = io("https://plankton-app-z3swh.ondigitalocean.app/")
+// const socket = io("http://localhost:3000/")
 interface StatesOfRoom {
 
     RoomPassword: String,
