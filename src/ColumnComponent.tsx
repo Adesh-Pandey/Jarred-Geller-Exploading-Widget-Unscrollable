@@ -76,7 +76,6 @@ function ColumnComponent({ audioAbility,
     const InnerCirclesList = useSelector((state: RootState) => state.allState.InnerCirclesList)
 
     const [stationaryStacking, _setstationaryStacking] = useState(false);
-    const audio = useRef<HTMLAudioElement>(null);
     // const [stacking, _setstacking] = useState(false)
     const [highLightOrWhite, sethighLightOrWhite] = useState("#95959514");
 
@@ -311,8 +310,6 @@ function ColumnComponent({ audioAbility,
     const onMouseMoveWhileDragging = (e: any) => {
         if (stackingRef.current) {
             setXandYCoordinates({ x: e.clientX, y: e.clientY })
-            // console.log(e.clientX)s
-            // console.log(XandYCoordinates)
             let callChanges = -1;
             const elementsHere = document.elementsFromPoint(XandYCoordinates.x, XandYCoordinates.y);
             for (let i = 0; i < elementsHere.length; i++) {
